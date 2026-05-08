@@ -65,6 +65,7 @@ private:
     Control skew;
     Control feedback;
     Control damping;
+    Control freeze;
     Control octaveUp;
     Control octaveDown;
     Control mix;

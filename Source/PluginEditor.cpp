@@ -228,6 +228,7 @@ ErbeyVerbyAudioProcessorEditor::ErbeyVerbyAudioProcessorEditor (ErbeyVerbyAudioP
     setupControl (size, "Size", "size");
     setupControl (coupling, "Coupling", "coupling");
     setupControl (skew, "Skew", "skew");
+    setupControl (freeze, "Freeze", "freeze");
     setupControl (feedback, "Feedback", "feedback");
     setupControl (damping, "Damping", "damping");
     setupControl (octaveUp, "Oct Up", "octaveUp");
@@ -292,6 +293,7 @@ void ErbeyVerbyAudioProcessorEditor::timerCallback()
     updateScriptIndicator (size);
     updateScriptIndicator (coupling);
     updateScriptIndicator (skew);
+    updateScriptIndicator (freeze);
     updateScriptIndicator (feedback);
     updateScriptIndicator (damping);
     updateScriptIndicator (mix);
@@ -302,6 +304,7 @@ void ErbeyVerbyAudioProcessorEditor::timerCallback()
     updateModulatedSlider (size);
     updateModulatedSlider (coupling);
     updateModulatedSlider (skew);
+    updateModulatedSlider (freeze);
     updateModulatedSlider (feedback);
     updateModulatedSlider (damping);
     updateModulatedSlider (mix);
@@ -429,11 +432,12 @@ void ErbeyVerbyAudioProcessorEditor::resized()
         control.slider.setBounds (bounds);
     };
 
-    const auto upperWidth = upper.getWidth() / 4;
+    const auto upperWidth = upper.getWidth() / 5;
     layoutControl (paths, upper.removeFromLeft (upperWidth).reduced (8));
     layoutControl (size, upper.removeFromLeft (upperWidth).reduced (8));
     layoutControl (coupling, upper.removeFromLeft (upperWidth).reduced (8));
-    layoutControl (skew, upper.reduced (8));
+    layoutControl (skew, upper.removeFromLeft (upperWidth).reduced (8));
+    layoutControl (freeze, upper.reduced (8));
 
     const auto lowerWidth = lower.getWidth() / 5;
     layoutControl (feedback, lower.removeFromLeft (lowerWidth).reduced (8));

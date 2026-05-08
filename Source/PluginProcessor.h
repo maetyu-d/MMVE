@@ -150,9 +150,10 @@ private:
     juce::SmoothedValue<float, juce::ValueSmoothingTypes::Linear> octaveUpSmoothed;
     juce::SmoothedValue<float, juce::ValueSmoothingTypes::Linear> octaveDownSmoothed;
     juce::SmoothedValue<float, juce::ValueSmoothingTypes::Linear> mixSmoothed;
+    juce::SmoothedValue<float, juce::ValueSmoothingTypes::Linear> freezeSmoothed;
 
-    std::array<ParameterModulation, 9> parameterModulations;
-    std::array<std::atomic<float>, 9> currentModulatedValues;
+    std::array<ParameterModulation, 10> parameterModulations;
+    std::array<std::atomic<float>, 10> currentModulatedValues;
     mutable juce::CriticalSection modulationLock;
     double currentSampleRate = 44100.0;
     int currentProgram = 0;
