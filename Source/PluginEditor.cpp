@@ -388,15 +388,15 @@ void ErbeyVerbyAudioProcessorEditor::paint (juce::Graphics& g)
 
     const auto dotCount = 16;
     const auto active = juce::jlimit (1.0f, (float) dotCount, displayedPaths <= 0.0f ? getDisplayedPaths() : displayedPaths);
-    const auto stripWidth = 210.0f;
+    const auto stripWidth = 176.0f;
     const auto spacing = stripWidth / (float) (dotCount - 1);
-    const auto y = panel.getY() + 82.0f;
-    const auto startX = panel.getCentreX() - stripWidth * 0.5f;
+    const auto y = panel.getY() + 43.0f;
+    const auto startX = panel.getRight() - 268.0f;
 
     for (int i = 0; i < dotCount; ++i)
     {
         const auto weight = juce::jlimit (0.0f, 1.0f, active - (float) i);
-        const auto radius = 2.4f + weight * 2.0f;
+        const auto radius = 1.8f + weight * 1.6f;
         const auto centre = juce::Point<float> (startX + spacing * (float) i, y);
         const auto colour = juce::Colour (0xff42c7ff).withAlpha (0.14f + weight * 0.76f);
 
