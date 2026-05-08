@@ -505,7 +505,8 @@ float ErbeyVerbyAudioProcessor::skewValue (float centre, float skew, bool invert
 float ErbeyVerbyAudioProcessor::activeWeight (float pathCount, int pathIndex)
 {
     const auto oneBased = (float) pathIndex + 1.0f;
-    return juce::jlimit (0.0f, 1.0f, pathCount - oneBased + 1.0f);
+    const auto linear = juce::jlimit (0.0f, 1.0f, pathCount - oneBased + 1.0f);
+    return 0.5f - 0.5f * std::cos (linear * juce::MathConstants<float>::pi);
 }
 
 int ErbeyVerbyAudioProcessor::parameterIndexForId (const juce::String& parameterId)
@@ -720,6 +721,7 @@ void ErbeyVerbyAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, j
         float signedSumL = 0.0f;
         float signedSumR = 0.0f;
         float weightSum = 0.0f;
+        float weightPowerSum = 0.0f;
         std::array<float, maxPaths> pathOutL {};
         std::array<float, maxPaths> pathOutR {};
 
@@ -743,9 +745,11 @@ void ErbeyVerbyAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, j
             signedSumL += phase * weight * pathOutL[(size_t) path];
             signedSumR += phase * weight * pathOutR[(size_t) path];
             weightSum += weight;
+            weightPowerSum += weight * weight;
         }
 
-        const auto normaliser = 1.0f / std::sqrt (juce::jmax (1.0f, weightSum));
+        const auto loudnessCompensation = 0.72f + 0.28f * std::sqrt (juce::jlimit (0.0f, 1.0f, (activePaths - 1.0f) / ((float) maxPaths - 1.0f)));
+        const auto normaliser = loudnessCompensation / std::sqrt (juce::jmax (1.0f, weightPowerSum));
         const auto inverseWeightSum = 1.0f / juce::jmax (1.0f, weightSum);
         const auto earlyAmount = juce::jmap (diffusion, 0.16f, 0.045f);
         const auto inputBloomL = earlyAmount * (dryL + coupling * dryR);
@@ -778,7 +782,7 @@ void ErbeyVerbyAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, j
             const auto coupledFeedbackR = (1.0f - coupling) * localFeedbackR + coupling * localFeedbackL;
             const auto pathFeedbackL = leftDampers[(size_t) path].process (coupledFeedbackL, dampCoefficient);
             const auto pathFeedbackR = rightDampers[(size_t) path].process (coupledFeedbackR, dampCoefficient);
-            const auto excitation = weight * 0.64f / std::sqrt (juce::jmax (1.0f, activePaths));
+            const auto excitation = weight * 0.46f / std::sqrt (juce::jmax (1.0f, weightPowerSum));
 
             leftPaths[(size_t) path].write (excitation * (dryL + 0.18f * coupling * dryR) + effectiveFeedback * weight * pathFeedbackL);
             rightPaths[(size_t) path].write (excitation * (dryR + 0.18f * coupling * dryL) + effectiveFeedback * weight * pathFeedbackR);
