@@ -67,6 +67,17 @@ private:
         void reset() noexcept { z = 0.0f; }
     };
 
+    struct HighPass
+    {
+        float low = 0.0f;
+        float process (float input, float coefficient) noexcept
+        {
+            low += coefficient * (input - low);
+            return input - low;
+        }
+        void reset() noexcept { low = 0.0f; }
+    };
+
     struct PitchDelayLine
     {
         DelayPath delay;
@@ -132,6 +143,8 @@ private:
     std::array<OnePole, maxPaths> rightReadFilters;
     std::array<OnePole, maxPaths> leftDampers;
     std::array<OnePole, maxPaths> rightDampers;
+    std::array<HighPass, maxPaths> leftFeedbackHighPass;
+    std::array<HighPass, maxPaths> rightFeedbackHighPass;
     PitchDelayLine leftOctaveUp;
     PitchDelayLine rightOctaveUp;
     PitchDelayLine leftOctaveDown;
@@ -151,9 +164,11 @@ private:
     juce::SmoothedValue<float, juce::ValueSmoothingTypes::Linear> octaveDownSmoothed;
     juce::SmoothedValue<float, juce::ValueSmoothingTypes::Linear> mixSmoothed;
     juce::SmoothedValue<float, juce::ValueSmoothingTypes::Linear> freezeSmoothed;
+    juce::SmoothedValue<float, juce::ValueSmoothingTypes::Linear> lowCutSmoothed;
+    juce::SmoothedValue<float, juce::ValueSmoothingTypes::Linear> airSmoothed;
 
-    std::array<ParameterModulation, 10> parameterModulations;
-    std::array<std::atomic<float>, 10> currentModulatedValues;
+    std::array<ParameterModulation, 12> parameterModulations;
+    std::array<std::atomic<float>, 12> currentModulatedValues;
     mutable juce::CriticalSection modulationLock;
     double currentSampleRate = 44100.0;
     int currentProgram = 0;

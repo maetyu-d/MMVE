@@ -231,6 +231,8 @@ ErbeyVerbyAudioProcessorEditor::ErbeyVerbyAudioProcessorEditor (ErbeyVerbyAudioP
     setupControl (freeze, "Freeze", "freeze");
     setupControl (feedback, "Feedback", "feedback");
     setupControl (damping, "Damping", "damping");
+    setupControl (lowCut, "Low Cut", "lowCut");
+    setupControl (air, "Air", "air");
     setupControl (octaveUp, "Oct Up", "octaveUp");
     setupControl (octaveDown, "Oct Down", "octaveDown");
     setupControl (mix, "Mix", "mix");
@@ -296,6 +298,8 @@ void ErbeyVerbyAudioProcessorEditor::timerCallback()
     updateScriptIndicator (freeze);
     updateScriptIndicator (feedback);
     updateScriptIndicator (damping);
+    updateScriptIndicator (lowCut);
+    updateScriptIndicator (air);
     updateScriptIndicator (mix);
     updateScriptIndicator (octaveUp);
     updateScriptIndicator (octaveDown);
@@ -307,6 +311,8 @@ void ErbeyVerbyAudioProcessorEditor::timerCallback()
     updateModulatedSlider (freeze);
     updateModulatedSlider (feedback);
     updateModulatedSlider (damping);
+    updateModulatedSlider (lowCut);
+    updateModulatedSlider (air);
     updateModulatedSlider (mix);
     updateModulatedSlider (octaveUp);
     updateModulatedSlider (octaveDown);
@@ -432,17 +438,19 @@ void ErbeyVerbyAudioProcessorEditor::resized()
         control.slider.setBounds (bounds);
     };
 
-    const auto upperWidth = upper.getWidth() / 5;
+    const auto upperWidth = upper.getWidth() / 6;
     layoutControl (paths, upper.removeFromLeft (upperWidth).reduced (8));
     layoutControl (size, upper.removeFromLeft (upperWidth).reduced (8));
     layoutControl (coupling, upper.removeFromLeft (upperWidth).reduced (8));
     layoutControl (skew, upper.removeFromLeft (upperWidth).reduced (8));
-    layoutControl (freeze, upper.reduced (8));
+    layoutControl (freeze, upper.removeFromLeft (upperWidth).reduced (8));
+    layoutControl (mix, upper.reduced (8));
 
-    const auto lowerWidth = lower.getWidth() / 5;
+    const auto lowerWidth = lower.getWidth() / 6;
     layoutControl (feedback, lower.removeFromLeft (lowerWidth).reduced (8));
     layoutControl (damping, lower.removeFromLeft (lowerWidth).reduced (8));
-    layoutControl (mix, lower.removeFromLeft (lowerWidth).reduced (8));
+    layoutControl (lowCut, lower.removeFromLeft (lowerWidth).reduced (8));
+    layoutControl (air, lower.removeFromLeft (lowerWidth).reduced (8));
     layoutControl (octaveUp, lower.removeFromLeft (lowerWidth).reduced (8));
     layoutControl (octaveDown, lower.reduced (8));
 }
