@@ -778,6 +778,7 @@ void ErbeyVerbyAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, j
 
     auto* left = buffer.getWritePointer (0);
     auto* right = totalOutputChannels > 1 ? buffer.getWritePointer (1) : left;
+    const auto hasStereoInput = totalInputChannels > 1;
 
     for (int sample = 0; sample < buffer.getNumSamples(); ++sample)
     {
@@ -798,7 +799,7 @@ void ErbeyVerbyAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, j
         const auto effectiveFeedback = juce::jlimit (0.0f, 0.88f, feedback * juce::jmap (diffusion, 0.92f, 0.72f));
 
         const auto dryL = left[sample];
-        const auto dryR = right[sample];
+        const auto dryR = hasStereoInput ? right[sample] : dryL;
 
         const auto leftSize = skewValue (size, skew, false);
         const auto rightSize = skewValue (size, skew, true);
