@@ -3,7 +3,7 @@
 
 namespace
 {
-constexpr int numDelayPaths = 16;
+constexpr int numDelayPaths = 32;
 constexpr std::array<const char*, 9> parameterIds {
     "paths", "size", "coupling", "skew", "feedback", "damping", "mix", "octaveUp", "octaveDown"
 };
@@ -11,7 +11,11 @@ constexpr std::array<float, numDelayPaths> pathRatios {
     1.000f, 1.037f, 0.971f, 1.019f,
     0.947f, 1.061f, 0.983f, 1.029f,
     0.959f, 1.047f, 0.991f, 1.013f,
-    0.937f, 1.071f, 0.977f, 1.033f
+    0.937f, 1.071f, 0.977f, 1.033f,
+    1.011f, 0.929f, 1.083f, 0.989f,
+    1.052f, 0.963f, 1.024f, 0.941f,
+    1.067f, 0.981f, 1.039f, 0.953f,
+    1.091f, 0.973f, 1.017f, 0.933f
 };
 
 struct Preset
@@ -52,7 +56,7 @@ constexpr std::array<Preset, 12> presets {{
     },
     {
         "Shimmer Tide",
-        { 16.0f, 0.42f, 0.96f, 0.45f, 0.60f, 0.22f, 0.78f, 0.72f, 0.00f },
+        { 32.0f, 0.42f, 0.96f, 0.45f, 0.60f, 0.22f, 0.78f, 0.72f, 0.00f },
         {
             "modulator paths\n  mode loop\n  stage 1 to 100% for 3s curve smooth\n  stage 2 to 28% for 600ms curve linear\n  stage 3 to 90% for 1300ms curve smooth\nend\n",
             "modulator size\n  mode loop\n  stage 1 to 6% for 1600ms curve linear\n  stage 2 to 82% for 5s curve smooth\n  stage 3 to 14% for 900ms curve linear\nend\n",
@@ -81,7 +85,7 @@ constexpr std::array<Preset, 12> presets {{
     },
     {
         "Small Silver Room",
-        { 16.0f, 0.03f, 0.92f, 0.00f, 0.70f, 0.86f, 0.80f, 0.42f, 0.26f },
+        { 32.0f, 0.03f, 0.92f, 0.00f, 0.70f, 0.86f, 0.80f, 0.42f, 0.26f },
         {
             "modulator paths\n  mode loop\n  stage 1 to 100% for 220ms curve linear\n  stage 2 to 36% for 160ms curve linear\n  stage 3 to 100% for 400ms curve smooth\nend\n",
             "modulator size\n  mode loop\n  stage 1 to 0% for 350ms curve linear\n  stage 2 to 11% for 900ms curve smooth\n  stage 3 to 2% for 260ms curve linear\nend\n",
@@ -127,7 +131,7 @@ constexpr std::array<Preset, 12> presets {{
     },
     {
         "Path Shredder",
-        { 16.0f, 0.12f, 0.35f, -0.60f, 0.66f, 0.72f, 0.88f, 0.35f, 0.20f },
+        { 32.0f, 0.12f, 0.35f, -0.60f, 0.66f, 0.72f, 0.88f, 0.35f, 0.20f },
         {
             "modulator paths\n  mode loop\n  stage 1 random 0% 100% for 90ms curve linear\n  stage 2 random 0% 100% for 120ms curve linear\n  stage 3 random 0% 100% for 70ms curve linear\nend\n",
             "modulator size\n  mode loop\n  stage 1 random 0% 28% for 160ms curve linear\n  stage 2 random 5% 70% for 220ms curve linear\nend\n",
@@ -143,7 +147,7 @@ constexpr std::array<Preset, 12> presets {{
     },
     {
         "Cathedral Collapse",
-        { 16.0f, 1.0f, 0.98f, 0.0f, 0.84f, 0.10f, 0.95f, 0.75f, 0.46f },
+        { 32.0f, 1.0f, 0.98f, 0.0f, 0.84f, 0.10f, 0.95f, 0.75f, 0.46f },
         {
             "modulator paths\n  mode loop\n  stage 1 to 100% for 8s curve smooth\n  stage 2 to 12% for 900ms curve linear\nend\n",
             "modulator size\n  mode loop\n  stage 1 to 100% for 12s curve smooth\n  stage 2 to 10% for 1200ms curve smooth\nend\n",

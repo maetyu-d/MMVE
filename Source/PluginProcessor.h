@@ -42,8 +42,8 @@ public:
     juce::AudioProcessorValueTreeState parameters;
 
 private:
-    static constexpr int maxPaths = 16;
-    static constexpr float maxDelaySeconds = 12.0f;
+    static constexpr int maxPaths = 32;
+    static constexpr float maxDelaySeconds = 18.0f;
 
     struct DelayPath
     {

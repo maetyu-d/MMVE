@@ -386,9 +386,9 @@ void ErbeyVerbyAudioProcessorEditor::paint (juce::Graphics& g)
     g.setColour (juce::Colour (0x16000000));
     g.fillRoundedRectangle (panel.withY (panel.getBottom() - 58.0f).withHeight (40.0f), 8.0f);
 
-    const auto dotCount = 16;
+    const auto dotCount = 32;
     const auto active = juce::jlimit (1.0f, (float) dotCount, displayedPaths <= 0.0f ? getDisplayedPaths() : displayedPaths);
-    const auto stripWidth = 176.0f;
+    const auto stripWidth = 248.0f;
     const auto spacing = stripWidth / (float) (dotCount - 1);
     const auto y = panel.getY() + 43.0f;
     const auto startX = panel.getCentreX() - stripWidth * 0.5f;
