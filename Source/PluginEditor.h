@@ -51,11 +51,13 @@ private:
     void timerCallback() override;
     void updateScriptIndicator (Control& control);
     void updateModulatedSlider (Control& control);
+    float getDisplayedPaths() const;
 
     ErbeyVerbyAudioProcessor& audioProcessor;
     KnobLookAndFeel knobLookAndFeel;
     juce::Label title;
     juce::Label subtitle;
+    float displayedPaths = 0.0f;
 
     Control paths;
     Control size;

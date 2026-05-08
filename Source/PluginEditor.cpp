@@ -281,6 +281,13 @@ void ErbeyVerbyAudioProcessorEditor::openFabricScriptEditor (const juce::String&
 
 void ErbeyVerbyAudioProcessorEditor::timerCallback()
 {
+    const auto nextDisplayedPaths = getDisplayedPaths();
+    if (std::abs (nextDisplayedPaths - displayedPaths) > 0.01f)
+    {
+        displayedPaths = nextDisplayedPaths;
+        repaint();
+    }
+
     updateScriptIndicator (paths);
     updateScriptIndicator (size);
     updateScriptIndicator (coupling);
@@ -330,6 +337,14 @@ void ErbeyVerbyAudioProcessorEditor::updateModulatedSlider (Control& control)
     control.slider.setValue (value, juce::dontSendNotification);
 }
 
+float ErbeyVerbyAudioProcessorEditor::getDisplayedPaths() const
+{
+    if (audioProcessor.isFabricScriptActive ("paths"))
+        return audioProcessor.getCurrentModulatedParameterValue ("paths");
+
+    return (float) paths.slider.getValue();
+}
+
 void ErbeyVerbyAudioProcessorEditor::paint (juce::Graphics& g)
 {
     g.fillAll (juce::Colour (0xff070a0d));
@@ -370,6 +385,30 @@ void ErbeyVerbyAudioProcessorEditor::paint (juce::Graphics& g)
 
     g.setColour (juce::Colour (0x16000000));
     g.fillRoundedRectangle (panel.withY (panel.getBottom() - 58.0f).withHeight (40.0f), 8.0f);
+
+    const auto dotCount = 16;
+    const auto active = juce::jlimit (1.0f, (float) dotCount, displayedPaths <= 0.0f ? getDisplayedPaths() : displayedPaths);
+    const auto stripWidth = 210.0f;
+    const auto spacing = stripWidth / (float) (dotCount - 1);
+    const auto y = panel.getY() + 82.0f;
+    const auto startX = panel.getCentreX() - stripWidth * 0.5f;
+
+    for (int i = 0; i < dotCount; ++i)
+    {
+        const auto weight = juce::jlimit (0.0f, 1.0f, active - (float) i);
+        const auto radius = 2.4f + weight * 2.0f;
+        const auto centre = juce::Point<float> (startX + spacing * (float) i, y);
+        const auto colour = juce::Colour (0xff42c7ff).withAlpha (0.14f + weight * 0.76f);
+
+        if (weight > 0.0f)
+        {
+            g.setColour (colour.withAlpha (0.18f * weight));
+            g.fillEllipse (centre.x - radius * 2.2f, centre.y - radius * 2.2f, radius * 4.4f, radius * 4.4f);
+        }
+
+        g.setColour (colour);
+        g.fillEllipse (centre.x - radius, centre.y - radius, radius * 2.0f, radius * 2.0f);
+    }
 }
 
 void ErbeyVerbyAudioProcessorEditor::resized()
