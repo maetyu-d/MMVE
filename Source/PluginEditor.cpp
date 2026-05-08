@@ -125,6 +125,24 @@ public:
         help.setJustificationType (juce::Justification::centredLeft);
         addAndMakeVisible (help);
 
+        depthLabel.setText ("Depth", juce::dontSendNotification);
+        depthLabel.setFont (juce::FontOptions (13.0f));
+        depthLabel.setColour (juce::Label::textColourId, juce::Colour (0xffb8c4ce));
+        depthLabel.setJustificationType (juce::Justification::centredLeft);
+        addAndMakeVisible (depthLabel);
+
+        depth.setSliderStyle (juce::Slider::LinearHorizontal);
+        depth.setTextBoxStyle (juce::Slider::TextBoxRight, false, 62, 20);
+        depth.setRange (0.0, 1.0, 0.001);
+        depth.setValue (processor.getFabricScriptDepth (parameterId), juce::dontSendNotification);
+        depth.setColour (juce::Slider::trackColourId, juce::Colour (0xff42c7ff));
+        depth.setColour (juce::Slider::backgroundColourId, juce::Colour (0xff24313b));
+        depth.setColour (juce::Slider::thumbColourId, juce::Colour (0xffeef5ff));
+        depth.setColour (juce::Slider::textBoxTextColourId, juce::Colour (0xffdce7ef));
+        depth.setColour (juce::Slider::textBoxBackgroundColourId, juce::Colours::transparentBlack);
+        depth.setColour (juce::Slider::textBoxOutlineColourId, juce::Colours::transparentBlack);
+        addAndMakeVisible (depth);
+
         error.setFont (juce::FontOptions (13.0f, juce::Font::bold));
         error.setColour (juce::Label::textColourId, juce::Colour (0xffff6f61));
         error.setJustificationType (juce::Justification::centredLeft);
@@ -141,6 +159,7 @@ public:
             }
 
             processor.setFabricScriptForParameter (parameterId, script.getText());
+            processor.setFabricScriptDepth (parameterId, (float) depth.getValue());
             if (auto* window = findParentComponentOfClass<juce::DialogWindow>())
                 window->exitModalState (0);
         };
@@ -176,6 +195,9 @@ public:
         apply.setBounds (buttons.removeFromRight (94).reduced (4));
         clear.setBounds (buttons.removeFromRight (94).reduced (4));
         cancel.setBounds (buttons.removeFromRight (94).reduced (4));
+        auto depthArea = area.removeFromBottom (34);
+        depthLabel.setBounds (depthArea.removeFromLeft (58));
+        depth.setBounds (depthArea.reduced (0, 4));
         script.setBounds (area.reduced (0, 8));
     }
 
@@ -201,8 +223,10 @@ private:
     juce::String parameterName;
     juce::Label title;
     juce::Label help;
+    juce::Label depthLabel;
     juce::Label error;
     juce::TextEditor script;
+    juce::Slider depth;
     juce::TextButton apply;
     juce::TextButton clear;
     juce::TextButton cancel;
@@ -226,6 +250,8 @@ ErbeyVerbyAudioProcessorEditor::ErbeyVerbyAudioProcessorEditor (ErbeyVerbyAudioP
 
     setupControl (paths, "Paths", "paths");
     setupControl (size, "Size", "size");
+    setupControl (sizeSync, "Sync", "sizeSync");
+    setupControl (sizeDivision, "Div", "sizeDivision");
     setupControl (coupling, "Coupling", "coupling");
     setupControl (skew, "Skew", "skew");
     setupControl (freeze, "Freeze", "freeze");
@@ -236,6 +262,7 @@ ErbeyVerbyAudioProcessorEditor::ErbeyVerbyAudioProcessorEditor (ErbeyVerbyAudioP
     setupControl (octaveUp, "Oct Up", "octaveUp");
     setupControl (octaveDown, "Oct Down", "octaveDown");
     setupControl (mix, "Mix", "mix");
+    setupControl (output, "Output", "output");
 
     setSize (960, 500);
     startTimerHz (30);
@@ -293,6 +320,8 @@ void ErbeyVerbyAudioProcessorEditor::timerCallback()
 
     updateScriptIndicator (paths);
     updateScriptIndicator (size);
+    updateScriptIndicator (sizeSync);
+    updateScriptIndicator (sizeDivision);
     updateScriptIndicator (coupling);
     updateScriptIndicator (skew);
     updateScriptIndicator (freeze);
@@ -301,11 +330,14 @@ void ErbeyVerbyAudioProcessorEditor::timerCallback()
     updateScriptIndicator (lowCut);
     updateScriptIndicator (air);
     updateScriptIndicator (mix);
+    updateScriptIndicator (output);
     updateScriptIndicator (octaveUp);
     updateScriptIndicator (octaveDown);
 
     updateModulatedSlider (paths);
     updateModulatedSlider (size);
+    updateModulatedSlider (sizeSync);
+    updateModulatedSlider (sizeDivision);
     updateModulatedSlider (coupling);
     updateModulatedSlider (skew);
     updateModulatedSlider (freeze);
@@ -314,8 +346,10 @@ void ErbeyVerbyAudioProcessorEditor::timerCallback()
     updateModulatedSlider (lowCut);
     updateModulatedSlider (air);
     updateModulatedSlider (mix);
+    updateModulatedSlider (output);
     updateModulatedSlider (octaveUp);
     updateModulatedSlider (octaveDown);
+    updateVisualMeters();
 }
 
 void ErbeyVerbyAudioProcessorEditor::updateScriptIndicator (Control& control)
@@ -352,6 +386,34 @@ float ErbeyVerbyAudioProcessorEditor::getDisplayedPaths() const
         return audioProcessor.getCurrentModulatedParameterValue ("paths");
 
     return (float) paths.slider.getValue();
+}
+
+void ErbeyVerbyAudioProcessorEditor::updateVisualMeters()
+{
+    const auto follow = 0.28f;
+    const auto decay = 0.92f;
+    const auto update = [follow, decay] (float current, float target)
+    {
+        return target > current ? current + (target - current) * follow
+                                : current * decay + target * (1.0f - decay);
+    };
+
+    const auto nextLeft = update (displayedLevelLeft, audioProcessor.getVisualLevelLeft());
+    const auto nextRight = update (displayedLevelRight, audioProcessor.getVisualLevelRight());
+    const auto nextWidth = update (displayedStereoWidth, audioProcessor.getVisualStereoWidth());
+    const auto nextLimiter = update (displayedLimiter, audioProcessor.getVisualLimiterReduction());
+
+    if (std::abs (nextLeft - displayedLevelLeft) > 0.002f
+        || std::abs (nextRight - displayedLevelRight) > 0.002f
+        || std::abs (nextWidth - displayedStereoWidth) > 0.002f
+        || std::abs (nextLimiter - displayedLimiter) > 0.002f)
+    {
+        displayedLevelLeft = nextLeft;
+        displayedLevelRight = nextRight;
+        displayedStereoWidth = nextWidth;
+        displayedLimiter = nextLimiter;
+        repaint();
+    }
 }
 
 void ErbeyVerbyAudioProcessorEditor::paint (juce::Graphics& g)
@@ -418,6 +480,37 @@ void ErbeyVerbyAudioProcessorEditor::paint (juce::Graphics& g)
         g.setColour (colour);
         g.fillEllipse (centre.x - radius, centre.y - radius, radius * 2.0f, radius * 2.0f);
     }
+
+    auto meter = juce::Rectangle<float> (panel.getCentreX() - 132.0f, panel.getY() + 58.0f, 264.0f, 18.0f);
+    g.setColour (juce::Colour (0x28000000));
+    g.fillRoundedRectangle (meter, 5.0f);
+    g.setColour (juce::Colour (0x33d7ecff));
+    g.drawRoundedRectangle (meter, 5.0f, 0.8f);
+
+    auto meterInner = meter.reduced (5.0f, 5.0f);
+    auto leftMeter = meterInner.removeFromLeft ((meterInner.getWidth() - 4.0f) * 0.5f);
+    meterInner.removeFromLeft (4.0f);
+    auto rightMeter = meterInner;
+    auto centreLine = meter.withWidth (1.0f).withCentre (meter.getCentre());
+    g.setColour (juce::Colour (0x44d7ecff));
+    g.fillRect (centreLine);
+
+    const auto leftWidth = leftMeter.getWidth() * juce::jlimit (0.0f, 1.0f, displayedLevelLeft);
+    const auto rightWidth = rightMeter.getWidth() * juce::jlimit (0.0f, 1.0f, displayedLevelRight);
+    g.setColour (juce::Colour (0xff42c7ff).withAlpha (0.22f + displayedLevelLeft * 0.60f));
+    g.fillRoundedRectangle (leftMeter.withX (leftMeter.getRight() - leftWidth).withWidth (leftWidth), 3.0f);
+    g.setColour (juce::Colour (0xff42c7ff).withAlpha (0.22f + displayedLevelRight * 0.60f));
+    g.fillRoundedRectangle (rightMeter.withWidth (rightWidth), 3.0f);
+
+    const auto widthX = meter.getCentreX() + juce::jmap (juce::jlimit (0.0f, 1.0f, displayedStereoWidth), -54.0f, 54.0f);
+    g.setColour (juce::Colour (0xffeef5ff).withAlpha (0.42f + displayedStereoWidth * 0.45f));
+    g.fillEllipse (widthX - 3.0f, meter.getCentreY() - 3.0f, 6.0f, 6.0f);
+
+    if (displayedLimiter > 0.001f)
+    {
+        g.setColour (juce::Colour (0xffff6f61).withAlpha (0.18f + displayedLimiter * 0.62f));
+        g.fillRoundedRectangle (meter.withTrimmedLeft (meter.getWidth() * (1.0f - displayedLimiter)), 5.0f);
+    }
 }
 
 void ErbeyVerbyAudioProcessorEditor::resized()
@@ -438,19 +531,22 @@ void ErbeyVerbyAudioProcessorEditor::resized()
         control.slider.setBounds (bounds);
     };
 
-    const auto upperWidth = upper.getWidth() / 6;
+    const auto upperWidth = upper.getWidth() / 7;
     layoutControl (paths, upper.removeFromLeft (upperWidth).reduced (8));
     layoutControl (size, upper.removeFromLeft (upperWidth).reduced (8));
+    layoutControl (sizeSync, upper.removeFromLeft (upperWidth).reduced (8));
+    layoutControl (sizeDivision, upper.removeFromLeft (upperWidth).reduced (8));
     layoutControl (coupling, upper.removeFromLeft (upperWidth).reduced (8));
     layoutControl (skew, upper.removeFromLeft (upperWidth).reduced (8));
-    layoutControl (freeze, upper.removeFromLeft (upperWidth).reduced (8));
-    layoutControl (mix, upper.reduced (8));
+    layoutControl (freeze, upper.reduced (8));
 
-    const auto lowerWidth = lower.getWidth() / 6;
+    const auto lowerWidth = lower.getWidth() / 8;
     layoutControl (feedback, lower.removeFromLeft (lowerWidth).reduced (8));
     layoutControl (damping, lower.removeFromLeft (lowerWidth).reduced (8));
     layoutControl (lowCut, lower.removeFromLeft (lowerWidth).reduced (8));
     layoutControl (air, lower.removeFromLeft (lowerWidth).reduced (8));
+    layoutControl (mix, lower.removeFromLeft (lowerWidth).reduced (8));
+    layoutControl (output, lower.removeFromLeft (lowerWidth).reduced (8));
     layoutControl (octaveUp, lower.removeFromLeft (lowerWidth).reduced (8));
     layoutControl (octaveDown, lower.reduced (8));
 }

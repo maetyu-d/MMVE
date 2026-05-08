@@ -4,8 +4,8 @@
 namespace
 {
 constexpr int numDelayPaths = 32;
-constexpr std::array<const char*, 12> parameterIds {
-    "paths", "size", "coupling", "skew", "feedback", "damping", "mix", "octaveUp", "octaveDown", "freeze", "lowCut", "air"
+constexpr std::array<const char*, 15> parameterIds {
+    "paths", "size", "coupling", "skew", "feedback", "damping", "mix", "octaveUp", "octaveDown", "freeze", "lowCut", "air", "sizeSync", "sizeDivision", "output"
 };
 constexpr std::array<float, numDelayPaths> pathRatios {
     1.000f, 1.037f, 0.971f, 1.019f,
@@ -21,193 +21,239 @@ constexpr std::array<float, numDelayPaths> pathRatios {
 struct Preset
 {
     const char* name;
-    std::array<float, 12> values;
-    std::array<const char*, 12> scripts;
-    std::array<bool, 12> active;
+    std::array<float, 15> values;
+    std::array<const char*, 15> scripts;
+    std::array<bool, 15> active;
 };
 
 constexpr std::array<Preset, 12> presets {{
     {
-        "Glass Drift",
-        { 15.5f, 0.68f, 0.88f, 0.72f, 0.68f, 0.28f, 0.72f, 0.36f, 0.18f, 0.0f, 0.20f, 0.55f },
+        "Clockwork Bloom",
+        { 18.0f, 0.52f, 0.70f, 0.24f, 0.66f, 0.34f, 0.70f, 0.18f, 0.00f, 0.0f, 0.26f, 0.62f, 1.0f, 8.0f, 0.86f },
         {
-            "modulator paths\n  mode loop\n  stage 1 to 8% for 800ms curve linear\n  stage 2 to 100% for 2600ms curve smooth\n  stage 3 to 18% for 500ms curve linear\n  stage 4 to 86% for 1400ms curve smooth\nend\n",
-            "modulator size\n  mode loop\n  stage 1 to 4% for 700ms curve linear\n  stage 2 to 96% for 4200ms curve smooth\n  stage 3 to 18% for 1200ms curve smooth\nend\n",
-            "modulator coupling\n  mode loop\n  stage 1 to 0% for 1300ms curve smooth\n  stage 2 to 100% for 2100ms curve smooth\nend\n",
-            "modulator skew\n  mode loop\n  stage 1 to 0% for 1800ms curve smooth\n  stage 2 to 100% for 1800ms curve smooth\nend\n",
-            "", "", "", 
-            "modulator octaveUp\n  mode loop\n  stage 1 to 0% for 900ms curve smooth\n  stage 2 to 60% for 2800ms curve smooth\n  stage 3 to 8% for 700ms curve linear\nend\n",
+            "modulator paths\n  mode loop\n  stage 1 to 18% for 1s curve smooth\n  stage 2 to 100% for 2s curve smooth\n  stage 3 to 42% for 500ms curve linear\nend\n",
+            "",
+            "modulator coupling\n  mode loop\n  stage 1 sine 18% 92% for 4s\nend\n",
+            "modulator skew\n  mode loop\n  stage 1 sine 20% 80% for 3s\nend\n",
+            "modulator feedback\n  mode loop\n  stage 1 sine 48% 76% for 6s\nend\n",
+            "", "", "", "", "",
+            "modulator lowCut\n  mode loop\n  stage 1 sine 12% 45% for 8s\nend\n",
+            "modulator air\n  mode loop\n  stage 1 sine 42% 82% for 5s\nend\n",
+            "",
+            "modulator sizeDivision\n  mode loop\n  stage 1 to 67% for 4s curve linear\n  stage 2 to 83% for 2s curve smooth\n  stage 3 to 50% for 1s curve linear\nend\n",
             ""
         },
-        { true, true, true, true, false, false, false, true, false, false, false, false }
+        { true, false, true, true, true, false, false, false, false, false, true, true, false, true, false }
     },
     {
-        "Long Echo Bloom",
-        { 1.2f, 1.00f, 0.12f, -0.86f, 0.82f, 0.18f, 0.86f, 0.00f, 0.24f, 0.0f, 0.20f, 0.55f },
+        "Frozen Glass Plain",
+        { 32.0f, 0.92f, 0.95f, -0.18f, 0.80f, 0.12f, 0.92f, 0.48f, 0.12f, 0.72f, 0.34f, 0.86f, 0.0f, 8.0f, 0.78f },
         {
-            "modulator paths\n  mode loop\n  stage 1 to 0% for 6s curve smooth\n  stage 2 to 20% for 1600ms curve linear\nend\n",
-            "modulator size\n  mode loop\n  stage 1 to 100% for 9s curve smooth\n  stage 2 to 76% for 1800ms curve linear\nend\n",
-            "modulator coupling\n  mode loop\n  stage 1 to 0% for 2200ms curve linear\n  stage 2 to 100% for 1200ms curve smooth\n  stage 3 to 8% for 3s curve smooth\nend\n",
-            "modulator skew\n  mode loop\n  stage 1 to 7% for 3200ms curve smooth\n  stage 2 to 93% for 3200ms curve smooth\nend\n",
-            "", "", "", "", 
-            "modulator octaveDown\n  mode loop\n  stage 1 to 0% for 2s curve smooth\n  stage 2 to 50% for 3s curve smooth\n  stage 3 to 4% for 1200ms curve linear\nend\n"
-        },
-        { true, true, true, true, false, false, false, false, true, false, false, false }
-    },
-    {
-        "Shimmer Tide",
-        { 32.0f, 0.42f, 0.96f, 0.45f, 0.60f, 0.22f, 0.78f, 0.72f, 0.00f, 0.0f, 0.20f, 0.55f },
-        {
-            "modulator paths\n  mode loop\n  stage 1 to 100% for 3s curve smooth\n  stage 2 to 28% for 600ms curve linear\n  stage 3 to 90% for 1300ms curve smooth\nend\n",
-            "modulator size\n  mode loop\n  stage 1 to 6% for 1600ms curve linear\n  stage 2 to 82% for 5s curve smooth\n  stage 3 to 14% for 900ms curve linear\nend\n",
-            "modulator coupling\n  mode loop\n  stage 1 to 100% for 2400ms curve smooth\n  stage 2 to 18% for 1800ms curve linear\nend\n",
-            "", "", "",
-            "modulator mix\n  mode loop\n  stage 1 to 42% for 1200ms curve smooth\n  stage 2 to 96% for 2600ms curve smooth\n  stage 3 to 58% for 900ms curve linear\nend\n",
-            "modulator octaveUp\n  mode loop\n  stage 1 to 0% for 500ms curve linear\n  stage 2 to 100% for 1900ms curve smooth\n  stage 3 to 22% for 700ms curve linear\n  stage 4 to 78% for 1200ms curve smooth\nend\n",
-            ""
-        },
-        { true, true, true, false, false, false, true, true, false, false, false, false }
-    },
-    {
-        "Sub Orbit",
-        { 5.0f, 0.74f, 1.00f, -1.00f, 0.74f, 0.16f, 0.82f, 0.05f, 0.78f, 0.0f, 0.20f, 0.55f },
-        {
-            "modulator paths\n  mode loop\n  stage 1 to 12% for 1400ms curve linear\n  stage 2 to 72% for 3s curve smooth\n  stage 3 to 18% for 900ms curve linear\nend\n",
-            "modulator size\n  mode loop\n  stage 1 to 22% for 1200ms curve linear\n  stage 2 to 100% for 4200ms curve smooth\nend\n",
-            "modulator coupling\n  mode loop\n  stage 1 to 100% for 4s curve smooth\n  stage 2 to 0% for 700ms curve linear\nend\n",
-            "modulator skew\n  mode loop\n  stage 1 to 0% for 1500ms curve linear\n  stage 2 to 100% for 1500ms curve linear\n  stage 3 to 10% for 900ms curve smooth\nend\n",
+            "modulator paths\n  mode loop\n  stage 1 to 100% for 9s curve smooth\n  stage 2 to 62% for 1s curve linear\nend\n",
+            "modulator size\n  mode loop\n  stage 1 to 88% for 6s curve smooth\n  stage 2 to 100% for 6s curve smooth\nend\n",
+            "modulator coupling\n  mode loop\n  stage 1 sine 62% 100% for 11s\nend\n",
+            "modulator skew\n  mode loop\n  stage 1 sine 28% 72% for 13s\nend\n",
             "", "",
+            "modulator mix\n  mode loop\n  stage 1 to 100% for 5s curve smooth\n  stage 2 to 64% for 900ms curve linear\nend\n",
+            "modulator octaveUp\n  mode loop\n  stage 1 sine 8% 72% for 10s\nend\n",
             "",
+            "modulator freeze\n  mode loop\n  stage 1 to 0% for 1s curve linear\n  stage 2 to 96% for 8s curve smooth\n  stage 3 hold for 3s\nend\n",
+            "", "", "", "", ""
+        },
+        { true, true, true, true, false, false, true, true, false, true, false, false, false, false, false }
+    },
+    {
+        "Dub Nebula",
+        { 3.0f, 0.80f, 0.22f, -0.42f, 0.82f, 0.24f, 0.82f, 0.00f, 0.32f, 0.18f, 0.42f, 0.46f, 1.0f, 8.0f, 0.82f },
+        {
+            "modulator paths\n  mode loop\n  stage 1 to 0% for 3s curve smooth\n  stage 2 to 18% for 1s curve linear\nend\n",
             "",
-            "modulator octaveDown\n  mode loop\n  stage 1 to 0% for 300ms curve linear\n  stage 2 to 100% for 2500ms curve smooth\n  stage 3 to 18% for 600ms curve linear\nend\n"
-        },
-        { true, true, true, true, false, false, false, false, true, false, false, false }
-    },
-    {
-        "Small Silver Room",
-        { 32.0f, 0.03f, 0.92f, 0.00f, 0.70f, 0.86f, 0.80f, 0.42f, 0.26f, 0.0f, 0.20f, 0.55f },
-        {
-            "modulator paths\n  mode loop\n  stage 1 to 100% for 220ms curve linear\n  stage 2 to 36% for 160ms curve linear\n  stage 3 to 100% for 400ms curve smooth\nend\n",
-            "modulator size\n  mode loop\n  stage 1 to 0% for 350ms curve linear\n  stage 2 to 11% for 900ms curve smooth\n  stage 3 to 2% for 260ms curve linear\nend\n",
-            "", "",
-            "modulator feedback\n  mode loop\n  stage 1 to 30% for 220ms curve linear\n  stage 2 to 78% for 900ms curve smooth\n  stage 3 to 44% for 360ms curve linear\nend\n",
-            "", "",
-            "modulator octaveUp\n  mode loop\n  stage 1 to 0% for 200ms curve linear\n  stage 2 to 70% for 1200ms curve smooth\n  stage 3 to 0% for 280ms curve linear\nend\n",
-            "modulator octaveDown\n  mode loop\n  stage 1 to 60% for 800ms curve smooth\n  stage 2 to 0% for 500ms curve linear\nend\n"
-        },
-        { true, true, false, false, true, false, false, true, true, false, false, false }
-    },
-    {
-        "Breathing Machine",
-        { 9.0f, 0.86f, 0.86f, 0.62f, 0.76f, 0.24f, 0.90f, 0.48f, 0.40f, 0.0f, 0.20f, 0.55f },
-        {
-            "modulator paths\n  mode loop\n  stage 1 to 0% for 900ms curve linear\n  stage 2 to 100% for 1700ms curve smooth\n  stage 3 to 26% for 500ms curve linear\nend\n",
-            "modulator size\n  mode loop\n  stage 1 to 12% for 900ms curve linear\n  stage 2 to 100% for 3200ms curve smooth\n  stage 3 to 36% for 600ms curve linear\nend\n",
-            "modulator coupling\n  mode loop\n  stage 1 to 100% for 1300ms curve smooth\n  stage 2 to 0% for 1300ms curve smooth\nend\n",
-            "modulator skew\n  mode loop\n  stage 1 to 88% for 1400ms curve smooth\n  stage 2 to 12% for 1400ms curve smooth\nend\n",
-            "modulator feedback\n  mode loop\n  stage 1 to 18% for 700ms curve linear\n  stage 2 to 82% for 2400ms curve smooth\n  stage 3 to 35% for 500ms curve linear\nend\n",
+            "modulator coupling\n  mode loop\n  stage 1 to 0% for 2s curve linear\n  stage 2 to 88% for 700ms curve smooth\n  stage 3 to 12% for 3s curve smooth\nend\n",
+            "modulator skew\n  mode loop\n  stage 1 sine 8% 92% for 6s\nend\n",
+            "modulator feedback\n  mode loop\n  stage 1 to 55% for 1s curve smooth\n  stage 2 to 86% for 2s curve smooth\n  stage 3 to 40% for 700ms curve linear\nend\n",
             "",
-            "modulator mix\n  mode loop\n  stage 1 to 18% for 600ms curve linear\n  stage 2 to 100% for 2200ms curve smooth\n  stage 3 to 42% for 700ms curve linear\nend\n",
-            "modulator octaveUp\n  mode loop\n  stage 1 to 0% for 400ms curve linear\n  stage 2 to 88% for 1400ms curve smooth\n  stage 3 to 0% for 500ms curve linear\nend\n",
-            "modulator octaveDown\n  mode loop\n  stage 1 to 72% for 1200ms curve smooth\n  stage 2 to 0% for 600ms curve linear\nend\n"
-        },
-        { true, true, true, true, true, false, true, true, true, false, false, false }
-    },
-    {
-        "Event Horizon",
-        { 1.0f, 1.0f, 1.0f, 1.0f, 0.86f, 0.08f, 1.0f, 0.64f, 0.55f, 0.0f, 0.20f, 0.55f },
-        {
-            "modulator paths\n  mode loop\n  stage 1 hold for 900ms\n  stage 2 to 100% for 420ms curve linear\n  stage 3 random 0% 100% for 260ms curve linear\nend\n",
-            "modulator size\n  mode loop\n  stage 1 to 100% for 7s curve smooth\n  stage 2 random 8% 100% for 1300ms curve smooth\nend\n",
-            "modulator coupling\n  mode loop\n  stage 1 sine 0% 100% for 5s\nend\n",
-            "modulator skew\n  mode loop\n  stage 1 sine 0% 100% for 3300ms\nend\n",
-            "modulator feedback\n  mode loop\n  stage 1 to 22% for 500ms curve linear\n  stage 2 to 88% for 5s curve smooth\n  stage 3 random 30% 84% for 700ms curve smooth\nend\n",
-            "modulator damping\n  mode loop\n  stage 1 sine 5% 70% for 4s\nend\n",
-            "modulator mix\n  mode loop\n  stage 1 to 100% for 1200ms curve smooth\n  stage 2 random 45% 100% for 900ms curve linear\nend\n",
-            "modulator octaveUp\n  mode loop\n  stage 1 random 0% 100% for 900ms curve smooth\nend\n",
-            "modulator octaveDown\n  mode loop\n  stage 1 random 0% 90% for 1100ms curve smooth\nend\n"
-        },
-        { true, true, true, true, true, true, true, true, true, false, false, false }
-    },
-    {
-        "Path Shredder",
-        { 32.0f, 0.12f, 0.35f, -0.60f, 0.66f, 0.72f, 0.88f, 0.35f, 0.20f, 0.0f, 0.20f, 0.55f },
-        {
-            "modulator paths\n  mode loop\n  stage 1 random 0% 100% for 90ms curve linear\n  stage 2 random 0% 100% for 120ms curve linear\n  stage 3 random 0% 100% for 70ms curve linear\nend\n",
-            "modulator size\n  mode loop\n  stage 1 random 0% 28% for 160ms curve linear\n  stage 2 random 5% 70% for 220ms curve linear\nend\n",
-            "modulator coupling\n  mode loop\n  stage 1 random 0% 100% for 300ms curve linear\nend\n",
-            "modulator skew\n  mode loop\n  stage 1 random 0% 100% for 180ms curve linear\nend\n",
-            "modulator feedback\n  mode loop\n  stage 1 random 25% 78% for 260ms curve smooth\nend\n",
+            "modulator mix\n  mode loop\n  stage 1 to 42% for 600ms curve linear\n  stage 2 to 96% for 1200ms curve smooth\n  stage 3 to 55% for 900ms curve smooth\nend\n",
             "", 
-            "modulator mix\n  mode loop\n  stage 1 random 55% 100% for 200ms curve linear\nend\n",
-            "modulator octaveUp\n  mode loop\n  stage 1 random 0% 80% for 240ms curve linear\nend\n",
-            "modulator octaveDown\n  mode loop\n  stage 1 random 0% 60% for 310ms curve linear\nend\n"
+            "modulator octaveDown\n  mode loop\n  stage 1 sine 0% 58% for 5s\nend\n",
+            "modulator freeze\n  mode loop\n  stage 1 hold for 2500ms\n  stage 2 to 48% for 400ms curve smooth\n  stage 3 to 0% for 1300ms curve smooth\nend\n",
+            "", "", "", "", ""
         },
-        { true, true, true, true, true, false, true, true, true, false, false, false }
+        { true, false, true, true, true, false, true, false, true, true, false, false, false, false, false }
     },
     {
-        "Cathedral Collapse",
-        { 32.0f, 1.0f, 0.98f, 0.0f, 0.84f, 0.10f, 0.95f, 0.75f, 0.46f, 0.0f, 0.20f, 0.55f },
+        "Micro Swarm Room",
+        { 32.0f, 0.035f, 0.86f, 0.00f, 0.62f, 0.72f, 0.74f, 0.24f, 0.18f, 0.0f, 0.78f, 0.76f, 0.0f, 8.0f, 0.88f },
         {
-            "modulator paths\n  mode loop\n  stage 1 to 100% for 8s curve smooth\n  stage 2 to 12% for 900ms curve linear\nend\n",
-            "modulator size\n  mode loop\n  stage 1 to 100% for 12s curve smooth\n  stage 2 to 10% for 1200ms curve smooth\nend\n",
-            "modulator coupling\n  mode loop\n  stage 1 to 100% for 9s curve smooth\n  stage 2 to 0% for 900ms curve linear\nend\n",
-            "modulator skew\n  mode loop\n  stage 1 sine 0% 100% for 11s\nend\n",
-            "modulator feedback\n  mode loop\n  stage 1 to 86% for 10s curve smooth\n  stage 2 to 20% for 700ms curve linear\nend\n",
-            "modulator damping\n  mode loop\n  stage 1 to 0% for 8s curve smooth\n  stage 2 to 90% for 1500ms curve smooth\nend\n",
-            "modulator mix\n  mode loop\n  stage 1 to 100% for 5s curve smooth\n  stage 2 to 35% for 800ms curve linear\nend\n",
-            "modulator octaveUp\n  mode loop\n  stage 1 to 0% for 3s curve smooth\n  stage 2 to 100% for 7s curve smooth\nend\n",
-            "modulator octaveDown\n  mode loop\n  stage 1 to 80% for 6s curve smooth\n  stage 2 to 0% for 1s curve linear\nend\n"
+            "modulator paths\n  mode loop\n  stage 1 random 45% 100% for 140ms curve linear\nend\n",
+            "modulator size\n  mode loop\n  stage 1 random 0% 12% for 220ms curve smooth\nend\n",
+            "",
+            "modulator skew\n  mode loop\n  stage 1 random 0% 100% for 420ms curve smooth\nend\n",
+            "modulator feedback\n  mode loop\n  stage 1 random 30% 70% for 300ms curve smooth\nend\n",
+            "modulator damping\n  mode loop\n  stage 1 sine 45% 92% for 3s\nend\n",
+            "", 
+            "modulator octaveUp\n  mode loop\n  stage 1 random 0% 45% for 520ms curve smooth\nend\n",
+            "modulator octaveDown\n  mode loop\n  stage 1 random 0% 35% for 650ms curve linear\nend\n",
+            "", 
+            "modulator lowCut\n  mode loop\n  stage 1 random 45% 100% for 600ms curve smooth\nend\n",
+            "modulator air\n  mode loop\n  stage 1 random 35% 100% for 400ms curve linear\nend\n",
+            "", "", ""
         },
-        { true, true, true, true, true, true, true, true, true, false, false, false }
+        { true, true, false, true, true, true, false, true, true, false, true, true, false, false, false }
     },
     {
-        "Neon Insects",
-        { 14.0f, 0.18f, 0.80f, 0.75f, 0.64f, 0.38f, 0.92f, 0.90f, 0.05f, 0.0f, 0.20f, 0.55f },
+        "Shimmer Freeze Gate",
+        { 24.0f, 0.64f, 0.98f, 0.36f, 0.72f, 0.20f, 0.90f, 0.86f, 0.00f, 0.42f, 0.30f, 0.88f, 0.65f, 8.0f, 0.74f },
         {
-            "modulator paths\n  mode loop\n  stage 1 wander 30% 100% for 160ms curve linear\nend\n",
-            "modulator size\n  mode loop\n  stage 1 wander 0% 45% for 220ms curve linear\nend\n",
-            "modulator coupling\n  mode loop\n  stage 1 sine 0% 100% for 900ms\nend\n",
-            "modulator skew\n  mode loop\n  stage 1 sine 0% 100% for 620ms\nend\n",
-            "modulator feedback\n  mode loop\n  stage 1 wander 35% 82% for 400ms curve smooth\nend\n",
-            "modulator damping\n  mode loop\n  stage 1 random 12% 82% for 500ms curve linear\nend\n",
-            "modulator mix\n  mode loop\n  stage 1 to 100% for 300ms curve smooth\n  stage 2 to 55% for 200ms curve linear\nend\n",
-            "modulator octaveUp\n  mode loop\n  stage 1 sine 0% 100% for 700ms\nend\n",
-            "modulator octaveDown\n  mode loop\n  stage 1 random 0% 35% for 440ms curve linear\nend\n"
+            "modulator paths\n  mode loop\n  stage 1 to 50% for 1s curve smooth\n  stage 2 to 100% for 1s curve smooth\nend\n",
+            "",
+            "modulator coupling\n  mode loop\n  stage 1 sine 35% 100% for 3s\nend\n",
+            "modulator skew\n  mode loop\n  stage 1 sine 10% 90% for 1500ms\nend\n",
+            "", "",
+            "modulator mix\n  mode loop\n  stage 1 sine 55% 100% for 4s\nend\n",
+            "modulator octaveUp\n  mode loop\n  stage 1 sine 12% 100% for 2200ms\nend\n",
+            "",
+            "modulator freeze\n  mode loop\n  stage 1 to 0% for 800ms curve linear\n  stage 2 to 88% for 600ms curve smooth\n  stage 3 hold for 900ms\n  stage 4 to 5% for 700ms curve smooth\nend\n",
+            "",
+            "modulator air\n  mode loop\n  stage 1 sine 62% 100% for 5s\nend\n",
+            "modulator sizeSync\n  mode loop\n  stage 1 sine 20% 100% for 8s\nend\n",
+            "", ""
         },
-        { true, true, true, true, true, true, true, true, true, false, false, false }
+        { true, false, true, true, false, false, true, true, false, true, false, true, true, false, false }
     },
     {
-        "Reverse Weather",
-        { 3.0f, 0.82f, 0.90f, -0.80f, 0.78f, 0.26f, 0.84f, 0.22f, 0.70f, 0.0f, 0.20f, 0.55f },
+        "Subterranean Orbit",
+        { 6.0f, 0.76f, 1.00f, -0.88f, 0.76f, 0.18f, 0.86f, 0.00f, 0.92f, 0.16f, 0.18f, 0.32f, 0.45f, 10.0f, 0.76f },
         {
-            "modulator paths\n  mode loop\n  stage 1 to 0% for 2s curve smooth\n  stage 2 to 100% for 5s curve smooth\nend\n",
-            "modulator size\n  mode loop\n  stage 1 to 100% for 3s curve smooth\n  stage 2 to 0% for 5s curve smooth\nend\n",
-            "modulator coupling\n  mode loop\n  stage 1 sine 20% 100% for 7s\nend\n",
-            "modulator skew\n  mode loop\n  stage 1 to 100% for 3s curve smooth\n  stage 2 to 0% for 3s curve smooth\nend\n",
-            "modulator feedback\n  mode loop\n  stage 1 sine 30% 86% for 6s\nend\n",
-            "modulator damping\n  mode loop\n  stage 1 to 80% for 2s curve smooth\n  stage 2 to 5% for 5s curve smooth\nend\n",
-            "modulator mix\n  mode loop\n  stage 1 sine 35% 100% for 8s\nend\n",
-            "modulator octaveUp\n  mode loop\n  stage 1 random 0% 55% for 2s curve smooth\nend\n",
-            "modulator octaveDown\n  mode loop\n  stage 1 sine 0% 95% for 5s\nend\n"
+            "modulator paths\n  mode loop\n  stage 1 to 8% for 1600ms curve linear\n  stage 2 to 45% for 4s curve smooth\nend\n",
+            "modulator size\n  mode loop\n  stage 1 sine 45% 100% for 9s\nend\n",
+            "modulator coupling\n  mode loop\n  stage 1 sine 70% 100% for 7s\nend\n",
+            "modulator skew\n  mode loop\n  stage 1 sine 0% 100% for 5s\nend\n",
+            "modulator feedback\n  mode loop\n  stage 1 sine 52% 82% for 8s\nend\n",
+            "",
+            "", "",
+            "modulator octaveDown\n  mode loop\n  stage 1 sine 35% 100% for 6s\nend\n",
+            "modulator freeze\n  mode loop\n  stage 1 random 0% 38% for 2s curve smooth\nend\n",
+            "modulator lowCut\n  mode loop\n  stage 1 sine 4% 32% for 12s\nend\n",
+            "", "", "", ""
         },
-        { true, true, true, true, true, true, true, true, true, false, false, false }
+        { true, true, true, true, true, false, false, false, true, true, true, false, false, false, false }
     },
     {
-        "Octave Furnace",
-        { 10.0f, 0.55f, 1.0f, 0.20f, 0.72f, 0.18f, 1.0f, 1.0f, 1.0f, 0.0f, 0.20f, 0.55f },
+        "Broken Clock Room",
+        { 13.0f, 0.38f, 0.64f, 0.62f, 0.58f, 0.48f, 0.72f, 0.22f, 0.10f, 0.0f, 0.52f, 0.70f, 1.0f, 6.0f, 0.84f },
         {
-            "modulator paths\n  mode loop\n  stage 1 random 20% 100% for 700ms curve smooth\nend\n",
-            "modulator size\n  mode loop\n  stage 1 sine 5% 100% for 4s\nend\n",
-            "modulator coupling\n  mode loop\n  stage 1 to 100% for 2s curve smooth\n  stage 2 to 0% for 700ms curve linear\nend\n",
-            "modulator skew\n  mode loop\n  stage 1 random 0% 100% for 900ms curve smooth\nend\n",
-            "modulator feedback\n  mode loop\n  stage 1 random 25% 84% for 1s curve smooth\nend\n",
-            "modulator damping\n  mode loop\n  stage 1 sine 0% 60% for 3s\nend\n",
-            "modulator mix\n  mode loop\n  stage 1 to 100% for 1s curve smooth\nend\n",
+            "modulator paths\n  mode loop\n  stage 1 random 8% 100% for 300ms curve linear\n  stage 2 hold for 200ms\nend\n",
+            "",
+            "modulator coupling\n  mode loop\n  stage 1 random 0% 100% for 900ms curve smooth\nend\n",
+            "modulator skew\n  mode loop\n  stage 1 random 0% 100% for 700ms curve linear\nend\n",
+            "modulator feedback\n  mode loop\n  stage 1 random 32% 78% for 800ms curve smooth\nend\n",
+            "modulator damping\n  mode loop\n  stage 1 random 18% 88% for 1300ms curve smooth\nend\n",
+            "modulator mix\n  mode loop\n  stage 1 random 48% 95% for 500ms curve smooth\nend\n",
+            "", "",
+            "",
+            "modulator lowCut\n  mode loop\n  stage 1 random 15% 82% for 1s curve smooth\nend\n",
+            "modulator air\n  mode loop\n  stage 1 random 20% 96% for 1200ms curve smooth\nend\n",
+            "",
+            "modulator sizeDivision\n  mode loop\n  stage 1 random 17% 92% for 700ms curve linear\nend\n",
+            ""
+        },
+        { true, false, true, true, true, true, true, false, false, false, true, true, false, true, false }
+    },
+    {
+        "Cathedral Afterimage",
+        { 32.0f, 1.0f, 1.0f, 0.08f, 0.86f, 0.08f, 0.95f, 0.62f, 0.28f, 0.58f, 0.38f, 0.52f, 0.15f, 12.0f, 0.72f },
+        {
+            "modulator paths\n  mode loop\n  stage 1 to 100% for 12s curve smooth\n  stage 2 to 72% for 1s curve linear\nend\n",
+            "modulator size\n  mode loop\n  stage 1 to 100% for 14s curve smooth\n  stage 2 to 72% for 2s curve smooth\nend\n",
+            "modulator coupling\n  mode loop\n  stage 1 sine 65% 100% for 13s\nend\n",
+            "modulator skew\n  mode loop\n  stage 1 sine 40% 60% for 17s\nend\n",
+            "modulator feedback\n  mode loop\n  stage 1 sine 68% 88% for 19s\nend\n",
+            "modulator damping\n  mode loop\n  stage 1 sine 0% 35% for 15s\nend\n",
+            "",
+            "modulator octaveUp\n  mode loop\n  stage 1 sine 0% 72% for 16s\nend\n",
+            "",
+            "modulator freeze\n  mode loop\n  stage 1 to 0% for 2s curve smooth\n  stage 2 to 85% for 9s curve smooth\n  stage 3 hold for 5s\nend\n",
+            "", "", "", "", ""
+        },
+        { true, true, true, true, true, true, false, true, false, true, false, false, false, false, false }
+    },
+    {
+        "Stereo Knife Weather",
+        { 20.0f, 0.58f, 0.72f, 1.00f, 0.70f, 0.30f, 0.84f, 0.16f, 0.22f, 0.0f, 0.50f, 0.72f, 0.35f, 7.0f, 0.82f },
+        {
+            "modulator paths\n  mode loop\n  stage 1 sine 30% 100% for 5s\nend\n",
+            "modulator size\n  mode loop\n  stage 1 wander 35% 80% for 1200ms curve smooth\nend\n",
+            "modulator coupling\n  mode loop\n  stage 1 sine 0% 100% for 2200ms\nend\n",
+            "modulator skew\n  mode loop\n  stage 1 sine 0% 100% for 1400ms\nend\n",
+            "",
+            "modulator damping\n  mode loop\n  stage 1 sine 12% 78% for 3s\nend\n",
+            "modulator mix\n  mode loop\n  stage 1 sine 45% 100% for 6s\nend\n",
+            "modulator octaveUp\n  mode loop\n  stage 1 random 0% 38% for 1500ms curve smooth\nend\n",
+            "modulator octaveDown\n  mode loop\n  stage 1 random 0% 42% for 1700ms curve smooth\nend\n",
+            "",
+            "", "", "", "", ""
+        },
+        { true, true, true, true, false, true, true, true, true, false, false, false, false, false, false }
+    },
+    {
+        "Bass Safe Furnace",
+        { 11.0f, 0.50f, 1.0f, 0.16f, 0.72f, 0.22f, 1.0f, 1.0f, 0.88f, 0.0f, 0.88f, 0.44f, 0.0f, 8.0f, 0.68f },
+        {
+            "modulator paths\n  mode loop\n  stage 1 random 20% 100% for 900ms curve smooth\nend\n",
+            "modulator size\n  mode loop\n  stage 1 sine 8% 70% for 4s\nend\n",
+            "modulator coupling\n  mode loop\n  stage 1 sine 30% 100% for 5s\nend\n",
+            "modulator skew\n  mode loop\n  stage 1 random 15% 85% for 1300ms curve smooth\nend\n",
+            "modulator feedback\n  mode loop\n  stage 1 random 28% 76% for 900ms curve smooth\nend\n",
+            "modulator damping\n  mode loop\n  stage 1 sine 8% 70% for 3200ms\nend\n",
+            "",
             "modulator octaveUp\n  mode loop\n  stage 1 sine 0% 100% for 1400ms\nend\n",
-            "modulator octaveDown\n  mode loop\n  stage 1 sine 100% 0% for 1900ms\nend\n"
+            "modulator octaveDown\n  mode loop\n  stage 1 sine 15% 100% for 1900ms\nend\n",
+            "",
+            "modulator lowCut\n  mode loop\n  stage 1 sine 62% 100% for 5s\nend\n",
+            "modulator air\n  mode loop\n  stage 1 sine 18% 72% for 6s\nend\n",
+            "", "", ""
         },
-        { true, true, true, true, true, true, true, true, true, false, false, false }
+        { true, true, true, true, true, true, false, true, true, false, true, true, false, false, false }
+    },
+    {
+        "Granular Tide Pool",
+        { 29.0f, 0.16f, 0.58f, -0.30f, 0.64f, 0.62f, 0.86f, 0.38f, 0.28f, 0.12f, 0.72f, 0.82f, 0.0f, 8.0f, 0.84f },
+        {
+            "modulator paths\n  mode loop\n  stage 1 wander 30% 100% for 180ms curve linear\nend\n",
+            "modulator size\n  mode loop\n  stage 1 wander 0% 42% for 240ms curve smooth\nend\n",
+            "modulator coupling\n  mode loop\n  stage 1 random 0% 100% for 500ms curve smooth\nend\n",
+            "modulator skew\n  mode loop\n  stage 1 random 0% 100% for 360ms curve linear\nend\n",
+            "modulator feedback\n  mode loop\n  stage 1 wander 30% 78% for 500ms curve smooth\nend\n",
+            "modulator damping\n  mode loop\n  stage 1 random 35% 95% for 700ms curve smooth\nend\n",
+            "modulator mix\n  mode loop\n  stage 1 random 60% 100% for 380ms curve smooth\nend\n",
+            "modulator octaveUp\n  mode loop\n  stage 1 random 0% 76% for 600ms curve smooth\nend\n",
+            "modulator octaveDown\n  mode loop\n  stage 1 random 0% 62% for 750ms curve smooth\nend\n",
+            "modulator freeze\n  mode loop\n  stage 1 random 0% 28% for 900ms curve smooth\nend\n",
+            "modulator lowCut\n  mode loop\n  stage 1 random 40% 100% for 1s curve smooth\nend\n",
+            "modulator air\n  mode loop\n  stage 1 random 25% 100% for 900ms curve smooth\nend\n",
+            "", "", ""
+        },
+        { true, true, true, true, true, true, true, true, true, true, true, true, false, false, false }
+    },
+    {
+        "Manual Wide Hall",
+        { 18.0f, 0.70f, 0.72f, 0.00f, 0.62f, 0.32f, 0.58f, 0.00f, 0.00f, 0.0f, 0.34f, 0.66f, 0.0f, 8.0f, 0.92f },
+        {
+            "",
+            "",
+            "modulator coupling\n  mode loop\n  stage 1 sine 35% 92% for 9s\nend\n",
+            "modulator skew\n  mode loop\n  stage 1 sine 35% 65% for 12s\nend\n",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "modulator air\n  mode loop\n  stage 1 sine 50% 80% for 10s\nend\n",
+            "", "", ""
+        },
+        { false, false, true, true, false, false, false, false, false, false, false, true, false, false, false }
     }
 }};
 
@@ -494,7 +540,8 @@ float ErbeyVerbyAudioProcessor::ParameterModulation::process (float baseNormalis
         }
     }
 
-    return juce::jlimit (0.0f, 1.0f, current);
+    const auto modulated = juce::jlimit (0.0f, 1.0f, current);
+    return juce::jlimit (0.0f, 1.0f, baseNormalised + (modulated - baseNormalised) * depth);
 }
 
 ErbeyVerbyAudioProcessor::ErbeyVerbyAudioProcessor()
@@ -535,6 +582,12 @@ juce::AudioProcessorValueTreeState::ParameterLayout ErbeyVerbyAudioProcessor::cr
         juce::NormalisableRange<float> (0.0f, 1.0f, 0.001f), 0.20f));
     params.push_back (std::make_unique<juce::AudioParameterFloat> ("air", "Air",
         juce::NormalisableRange<float> (0.0f, 1.0f, 0.001f), 0.55f));
+    params.push_back (std::make_unique<juce::AudioParameterFloat> ("sizeSync", "Sync",
+        juce::NormalisableRange<float> (0.0f, 1.0f, 0.001f), 0.0f));
+    params.push_back (std::make_unique<juce::AudioParameterFloat> ("sizeDivision", "Div",
+        juce::NormalisableRange<float> (0.0f, 12.0f, 1.0f), 8.0f));
+    params.push_back (std::make_unique<juce::AudioParameterFloat> ("output", "Output",
+        juce::NormalisableRange<float> (0.0f, 1.0f, 0.001f), 1.0f));
 
     return { params.begin(), params.end() };
 }
@@ -591,7 +644,8 @@ void ErbeyVerbyAudioProcessor::prepareToPlay (double sampleRate, int)
 
     for (auto* smoother : { &pathsSmoothed, &sizeSmoothed, &couplingSmoothed, &skewSmoothed,
                             &feedbackSmoothed, &dampSmoothed, &octaveUpSmoothed, &octaveDownSmoothed, &mixSmoothed,
-                            &freezeSmoothed, &lowCutSmoothed, &airSmoothed })
+                            &freezeSmoothed, &lowCutSmoothed, &airSmoothed, &sizeSyncSmoothed, &sizeDivisionSmoothed,
+                            &outputSmoothed })
         smoother->reset (sampleRate, 0.035);
 
     pathsSmoothed.setCurrentAndTargetValue (*parameters.getRawParameterValue ("paths"));
@@ -606,6 +660,13 @@ void ErbeyVerbyAudioProcessor::prepareToPlay (double sampleRate, int)
     freezeSmoothed.setCurrentAndTargetValue (*parameters.getRawParameterValue ("freeze"));
     lowCutSmoothed.setCurrentAndTargetValue (*parameters.getRawParameterValue ("lowCut"));
     airSmoothed.setCurrentAndTargetValue (*parameters.getRawParameterValue ("air"));
+    sizeSyncSmoothed.setCurrentAndTargetValue (*parameters.getRawParameterValue ("sizeSync"));
+    sizeDivisionSmoothed.setCurrentAndTargetValue (*parameters.getRawParameterValue ("sizeDivision"));
+    outputSmoothed.setCurrentAndTargetValue (*parameters.getRawParameterValue ("output"));
+    visualLevelLeft.store (0.0f, std::memory_order_relaxed);
+    visualLevelRight.store (0.0f, std::memory_order_relaxed);
+    visualStereoWidth.store (0.0f, std::memory_order_relaxed);
+    visualLimiterReduction.store (0.0f, std::memory_order_relaxed);
 }
 
 float ErbeyVerbyAudioProcessor::skewValue (float centre, float skew, bool invert)
@@ -619,6 +680,30 @@ float ErbeyVerbyAudioProcessor::activeWeight (float pathCount, int pathIndex)
     const auto oneBased = (float) pathIndex + 1.0f;
     const auto linear = juce::jlimit (0.0f, 1.0f, pathCount - oneBased + 1.0f);
     return 0.5f - 0.5f * std::cos (linear * juce::MathConstants<float>::pi);
+}
+
+float ErbeyVerbyAudioProcessor::sizeDivisionToBeats (float division)
+{
+    static constexpr std::array<float, 13> divisions {
+        0.0625f, 0.083333f, 0.125f, 0.166667f, 0.25f, 0.333333f, 0.5f,
+        0.666667f, 1.0f, 1.5f, 2.0f, 3.0f, 4.0f
+    };
+
+    const auto index = juce::jlimit (0, (int) divisions.size() - 1, (int) std::round (division));
+    return divisions[(size_t) index];
+}
+
+float ErbeyVerbyAudioProcessor::softLimit (float sample, float& reduction) noexcept
+{
+    const auto sign = sample < 0.0f ? -1.0f : 1.0f;
+    const auto magnitude = std::abs (sample);
+    if (magnitude <= 0.92f)
+        return sample;
+
+    const auto limitedMagnitude = 0.92f + (1.0f - std::exp ((0.92f - magnitude) * 4.0f)) * 0.075f;
+    const auto limited = sign * juce::jmin (0.995f, limitedMagnitude);
+    reduction = juce::jmax (reduction, magnitude - std::abs (limited));
+    return limited;
 }
 
 int ErbeyVerbyAudioProcessor::parameterIndexForId (const juce::String& parameterId)
@@ -638,6 +723,7 @@ float ErbeyVerbyAudioProcessor::normaliseParameterValue (int parameterIndex, flo
         case 1: return juce::jmap (value, 0.03f, 1.0f, 0.0f, 1.0f);
         case 4: return juce::jmap (value, 0.0f, 0.96f, 0.0f, 1.0f);
         case 3: return juce::jmap (value, -1.0f, 1.0f, 0.0f, 1.0f);
+        case 13: return juce::jmap (value, 0.0f, 12.0f, 0.0f, 1.0f);
         default: return juce::jlimit (0.0f, 1.0f, value);
     }
 }
@@ -652,6 +738,7 @@ float ErbeyVerbyAudioProcessor::denormaliseParameterValue (int parameterIndex, f
         case 1: return juce::jmap (value, 0.03f, 1.0f);
         case 4: return juce::jmap (value, 0.0f, 0.96f);
         case 3: return juce::jmap (value, -1.0f, 1.0f);
+        case 13: return std::round (juce::jmap (value, 0.0f, 12.0f));
         default: return value;
     }
 }
@@ -692,6 +779,7 @@ void ErbeyVerbyAudioProcessor::applyPreset (int index)
         {
             auto& modulation = parameterModulations[(size_t) i];
             modulation.setScript (preset.scripts[(size_t) i] == nullptr ? "" : preset.scripts[(size_t) i], currentSampleRate);
+            modulation.depth = 1.0f;
             modulation.active = preset.active[(size_t) i] && ! modulation.stages.empty();
         }
     }
@@ -708,6 +796,7 @@ void ErbeyVerbyAudioProcessor::setFabricScriptForParameter (const juce::String& 
         return;
 
     const juce::ScopedLock lock (modulationLock);
+    parsed.depth = parameterModulations[(size_t) index].depth;
     parameterModulations[(size_t) index] = std::move (parsed);
 }
 
@@ -725,6 +814,26 @@ juce::String ErbeyVerbyAudioProcessor::getFabricScriptForParameter (const juce::
 
     const juce::ScopedLock lock (modulationLock);
     return parameterModulations[(size_t) index].script;
+}
+
+void ErbeyVerbyAudioProcessor::setFabricScriptDepth (const juce::String& parameterId, float depth)
+{
+    const auto index = parameterIndexForId (parameterId);
+    if (! juce::isPositiveAndBelow (index, (int) parameterModulations.size()))
+        return;
+
+    const juce::ScopedLock lock (modulationLock);
+    parameterModulations[(size_t) index].depth = juce::jlimit (0.0f, 1.0f, depth);
+}
+
+float ErbeyVerbyAudioProcessor::getFabricScriptDepth (const juce::String& parameterId) const
+{
+    const auto index = parameterIndexForId (parameterId);
+    if (! juce::isPositiveAndBelow (index, (int) parameterModulations.size()))
+        return 1.0f;
+
+    const juce::ScopedLock lock (modulationLock);
+    return parameterModulations[(size_t) index].depth;
 }
 
 void ErbeyVerbyAudioProcessor::setFabricScriptActive (const juce::String& parameterId, bool active)
@@ -773,6 +882,26 @@ bool ErbeyVerbyAudioProcessor::parameterHasFabricScript (const juce::String& par
     return ! parameterModulations[(size_t) index].stages.empty();
 }
 
+float ErbeyVerbyAudioProcessor::getVisualLevelLeft() const noexcept
+{
+    return visualLevelLeft.load (std::memory_order_relaxed);
+}
+
+float ErbeyVerbyAudioProcessor::getVisualLevelRight() const noexcept
+{
+    return visualLevelRight.load (std::memory_order_relaxed);
+}
+
+float ErbeyVerbyAudioProcessor::getVisualStereoWidth() const noexcept
+{
+    return visualStereoWidth.load (std::memory_order_relaxed);
+}
+
+float ErbeyVerbyAudioProcessor::getVisualLimiterReduction() const noexcept
+{
+    return visualLimiterReduction.load (std::memory_order_relaxed);
+}
+
 void ErbeyVerbyAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::MidiBuffer&)
 {
     juce::ScopedNoDenormals noDenormals;
@@ -794,10 +923,24 @@ void ErbeyVerbyAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, j
     freezeSmoothed.setTargetValue (*parameters.getRawParameterValue ("freeze"));
     lowCutSmoothed.setTargetValue (*parameters.getRawParameterValue ("lowCut"));
     airSmoothed.setTargetValue (*parameters.getRawParameterValue ("air"));
+    sizeSyncSmoothed.setTargetValue (*parameters.getRawParameterValue ("sizeSync"));
+    sizeDivisionSmoothed.setTargetValue (*parameters.getRawParameterValue ("sizeDivision"));
+    outputSmoothed.setTargetValue (*parameters.getRawParameterValue ("output"));
 
     auto* left = buffer.getWritePointer (0);
     auto* right = totalOutputChannels > 1 ? buffer.getWritePointer (1) : left;
     const auto hasStereoInput = totalInputChannels > 1;
+    auto hostBpm = 120.0f;
+    if (auto* playHead = getPlayHead())
+        if (auto position = playHead->getPosition())
+            if (auto bpm = position->getBpm())
+                hostBpm = juce::jlimit (20.0f, 320.0f, (float) *bpm);
+    const auto beatSeconds = 60.0f / hostBpm;
+    auto energyL = 0.0f;
+    auto energyR = 0.0f;
+    auto midEnergy = 0.0f;
+    auto sideEnergy = 0.0f;
+    auto limiterReduction = 0.0f;
 
     for (int sample = 0; sample < buffer.getNumSamples(); ++sample)
     {
@@ -813,6 +956,9 @@ void ErbeyVerbyAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, j
         const auto freeze = processModulatedParameter (9, freezeSmoothed.getNextValue());
         const auto lowCut = processModulatedParameter (10, lowCutSmoothed.getNextValue());
         const auto air = processModulatedParameter (11, airSmoothed.getNextValue());
+        const auto sizeSync = processModulatedParameter (12, sizeSyncSmoothed.getNextValue());
+        const auto sizeDivision = processModulatedParameter (13, sizeDivisionSmoothed.getNextValue());
+        const auto output = processModulatedParameter (14, outputSmoothed.getNextValue());
         const auto activePaths = juce::jmax (1.0f, pathCount);
         const auto sizeNormalised = juce::jlimit (0.0f, 1.0f, (size - 0.03f) / 0.97f);
         const auto smallSpaceDensity = 1.0f - sizeNormalised;
@@ -832,8 +978,16 @@ void ErbeyVerbyAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, j
         const auto rightSize = skewValue (size, skew, true);
         const auto minimumDelaySamples = juce::jmap (smallSpaceDensity, 0.006f, 0.0015f) * (float) currentSampleRate;
         const auto topEndExtension = 1.0f + std::pow (sizeNormalised, 5.0f);
-        const auto leftSpacingSeconds = 0.0025f + std::pow (leftSize, 1.55f) * 0.233f * topEndExtension;
-        const auto rightSpacingSeconds = 0.0025f + std::pow (rightSize, 1.55f) * 0.233f * topEndExtension;
+        const auto freeLeftSpacingSeconds = 0.0025f + std::pow (leftSize, 1.55f) * 0.233f * topEndExtension;
+        const auto freeRightSpacingSeconds = 0.0025f + std::pow (rightSize, 1.55f) * 0.233f * topEndExtension;
+        const auto syncShape = sizeSync * sizeSync;
+        const auto syncedSpacingSeconds = beatSeconds * sizeDivisionToBeats (sizeDivision);
+        const auto leftSyncSkew = std::pow (2.0f, skew * 0.5f);
+        const auto rightSyncSkew = std::pow (2.0f, -skew * 0.5f);
+        const auto leftSpacingSeconds = juce::jlimit (0.0015f, maxDelaySeconds * 0.35f,
+            juce::jmap (syncShape, freeLeftSpacingSeconds, syncedSpacingSeconds * leftSyncSkew));
+        const auto rightSpacingSeconds = juce::jlimit (0.0015f, maxDelaySeconds * 0.35f,
+            juce::jmap (syncShape, freeRightSpacingSeconds, syncedSpacingSeconds * rightSyncSkew));
         const auto leftSpacingSamples = leftSpacingSeconds * (float) currentSampleRate;
         const auto rightSpacingSamples = rightSpacingSeconds * (float) currentSampleRate;
         const auto dampCoefficient = juce::jmap (damping, 0.62f, 0.045f);
@@ -923,9 +1077,29 @@ void ErbeyVerbyAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, j
 
         const auto dryGain = std::cos (mix * juce::MathConstants<float>::halfPi);
         const auto wetGain = std::sin (mix * juce::MathConstants<float>::halfPi);
-        left[sample] = dryL * dryGain + wetL * wetGain;
-        right[sample] = dryR * dryGain + wetR * wetGain;
+        auto outL = (dryL * dryGain + wetL * wetGain) * output;
+        auto outR = (dryR * dryGain + wetR * wetGain) * output;
+        outL = softLimit (outL, limiterReduction);
+        outR = softLimit (outR, limiterReduction);
+        left[sample] = outL;
+        right[sample] = outR;
+
+        energyL += outL * outL;
+        energyR += outR * outR;
+        const auto mid = (outL + outR) * 0.5f;
+        const auto side = (outL - outR) * 0.5f;
+        midEnergy += mid * mid;
+        sideEnergy += side * side;
     }
+
+    const auto inverseSamples = 1.0f / (float) juce::jmax (1, buffer.getNumSamples());
+    const auto rmsL = std::sqrt (energyL * inverseSamples);
+    const auto rmsR = std::sqrt (energyR * inverseSamples);
+    const auto width = std::sqrt (sideEnergy / juce::jmax (1.0e-8f, midEnergy + sideEnergy));
+    visualLevelLeft.store (juce::jlimit (0.0f, 1.0f, rmsL * 2.4f), std::memory_order_relaxed);
+    visualLevelRight.store (juce::jlimit (0.0f, 1.0f, rmsR * 2.4f), std::memory_order_relaxed);
+    visualStereoWidth.store (juce::jlimit (0.0f, 1.0f, width * 1.8f), std::memory_order_relaxed);
+    visualLimiterReduction.store (juce::jlimit (0.0f, 1.0f, limiterReduction * 3.0f), std::memory_order_relaxed);
 }
 
 void ErbeyVerbyAudioProcessor::getStateInformation (juce::MemoryBlock& destData)
@@ -940,6 +1114,9 @@ void ErbeyVerbyAudioProcessor::getStateInformation (juce::MemoryBlock& destData)
                                nullptr);
             state.setProperty ("fabricScriptActive_" + juce::String (parameterIds[(size_t) i]),
                                parameterModulations[(size_t) i].active,
+                               nullptr);
+            state.setProperty ("fabricScriptDepth_" + juce::String (parameterIds[(size_t) i]),
+                               parameterModulations[(size_t) i].depth,
                                nullptr);
         }
     }
@@ -960,6 +1137,8 @@ void ErbeyVerbyAudioProcessor::setStateInformation (const void* data, int sizeIn
                     parameters.state.getProperty ("fabricScript_" + juce::String (parameterIds[(size_t) i])).toString());
                 setFabricScriptActive (parameterIds[(size_t) i],
                     (bool) parameters.state.getProperty ("fabricScriptActive_" + juce::String (parameterIds[(size_t) i]), true));
+                setFabricScriptDepth (parameterIds[(size_t) i],
+                    (float) parameters.state.getProperty ("fabricScriptDepth_" + juce::String (parameterIds[(size_t) i]), 1.0f));
             }
         }
 }

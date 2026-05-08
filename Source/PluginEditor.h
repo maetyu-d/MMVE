@@ -52,12 +52,17 @@ private:
     void updateScriptIndicator (Control& control);
     void updateModulatedSlider (Control& control);
     float getDisplayedPaths() const;
+    void updateVisualMeters();
 
     ErbeyVerbyAudioProcessor& audioProcessor;
     KnobLookAndFeel knobLookAndFeel;
     juce::Label title;
     juce::Label subtitle;
     float displayedPaths = 0.0f;
+    float displayedLevelLeft = 0.0f;
+    float displayedLevelRight = 0.0f;
+    float displayedStereoWidth = 0.0f;
+    float displayedLimiter = 0.0f;
 
     Control paths;
     Control size;
@@ -68,6 +73,9 @@ private:
     Control freeze;
     Control lowCut;
     Control air;
+    Control sizeSync;
+    Control sizeDivision;
+    Control output;
     Control octaveUp;
     Control octaveDown;
     Control mix;

@@ -34,10 +34,16 @@ public:
     void setFabricScriptForParameter (const juce::String& parameterId, const juce::String& script);
     juce::String validateFabricScript (const juce::String& script) const;
     juce::String getFabricScriptForParameter (const juce::String& parameterId) const;
+    void setFabricScriptDepth (const juce::String& parameterId, float depth);
+    float getFabricScriptDepth (const juce::String& parameterId) const;
     void setFabricScriptActive (const juce::String& parameterId, bool active);
     bool isFabricScriptActive (const juce::String& parameterId) const;
     float getCurrentModulatedParameterValue (const juce::String& parameterId) const;
     bool parameterHasFabricScript (const juce::String& parameterId) const;
+    float getVisualLevelLeft() const noexcept;
+    float getVisualLevelRight() const noexcept;
+    float getVisualStereoWidth() const noexcept;
+    float getVisualLimiterReduction() const noexcept;
 
     juce::AudioProcessorValueTreeState parameters;
 
@@ -91,6 +97,8 @@ private:
     static juce::AudioProcessorValueTreeState::ParameterLayout createParameterLayout();
     static float skewValue (float centre, float skew, bool invert);
     static float activeWeight (float pathCount, int pathIndex);
+    static float sizeDivisionToBeats (float division);
+    static float softLimit (float sample, float& reduction) noexcept;
     static int parameterIndexForId (const juce::String& parameterId);
     static float normaliseParameterValue (int parameterIndex, float value);
     static float denormaliseParameterValue (int parameterIndex, float normalised);
@@ -120,6 +128,7 @@ private:
         std::vector<ModStage> stages;
         bool loop = true;
         bool active = false;
+        float depth = 1.0f;
         int stage = 0;
         int sample = 0;
         float start = 0.0f;
@@ -166,9 +175,16 @@ private:
     juce::SmoothedValue<float, juce::ValueSmoothingTypes::Linear> freezeSmoothed;
     juce::SmoothedValue<float, juce::ValueSmoothingTypes::Linear> lowCutSmoothed;
     juce::SmoothedValue<float, juce::ValueSmoothingTypes::Linear> airSmoothed;
+    juce::SmoothedValue<float, juce::ValueSmoothingTypes::Linear> sizeSyncSmoothed;
+    juce::SmoothedValue<float, juce::ValueSmoothingTypes::Linear> sizeDivisionSmoothed;
+    juce::SmoothedValue<float, juce::ValueSmoothingTypes::Linear> outputSmoothed;
 
-    std::array<ParameterModulation, 12> parameterModulations;
-    std::array<std::atomic<float>, 12> currentModulatedValues;
+    std::array<ParameterModulation, 15> parameterModulations;
+    std::array<std::atomic<float>, 15> currentModulatedValues;
+    std::atomic<float> visualLevelLeft { 0.0f };
+    std::atomic<float> visualLevelRight { 0.0f };
+    std::atomic<float> visualStereoWidth { 0.0f };
+    std::atomic<float> visualLimiterReduction { 0.0f };
     mutable juce::CriticalSection modulationLock;
     double currentSampleRate = 44100.0;
     int currentProgram = 0;
