@@ -4,8 +4,8 @@
 namespace
 {
 constexpr int numDelayPaths = 32;
-constexpr std::array<const char*, 15> parameterIds {
-    "paths", "size", "coupling", "skew", "feedback", "damping", "mix", "octaveUp", "octaveDown", "freeze", "lowCut", "air", "sizeSync", "sizeDivision", "output"
+constexpr std::array<const char*, 18> parameterIds {
+    "paths", "size", "coupling", "skew", "feedback", "damping", "mix", "octaveUp", "octaveDown", "freeze", "lowCut", "air", "sizeSync", "sizeDivision", "output", "spread", "matrix", "earlyLate"
 };
 constexpr std::array<float, numDelayPaths> pathRatios {
     1.000f, 1.037f, 0.971f, 1.019f,
@@ -17,19 +17,29 @@ constexpr std::array<float, numDelayPaths> pathRatios {
     1.067f, 0.981f, 1.039f, 0.953f,
     1.091f, 0.973f, 1.017f, 0.933f
 };
+constexpr std::array<float, numDelayPaths> pathDisorder {
+    -0.42f, 0.31f, -0.18f, 0.55f,
+    -0.61f, 0.14f, 0.73f, -0.36f,
+    0.23f, -0.78f, 0.48f, -0.09f,
+    0.66f, -0.52f, 0.08f, -0.70f,
+    0.39f, -0.24f, 0.82f, -0.47f,
+    0.17f, 0.58f, -0.64f, 0.28f,
+    -0.12f, 0.76f, -0.33f, 0.44f,
+    -0.86f, 0.06f, 0.62f, -0.57f
+};
 
 struct Preset
 {
     const char* name;
-    std::array<float, 15> values;
-    std::array<const char*, 15> scripts;
-    std::array<bool, 15> active;
+    std::array<float, 18> values;
+    std::array<const char*, 18> scripts;
+    std::array<bool, 18> active;
 };
 
 constexpr std::array<Preset, 12> presets {{
     {
         "Clockwork Bloom",
-        { 18.0f, 0.52f, 0.70f, 0.24f, 0.66f, 0.34f, 0.70f, 0.18f, 0.00f, 0.0f, 0.26f, 0.62f, 1.0f, 8.0f, 0.86f },
+        { 18.0f, 0.52f, 0.70f, 0.24f, 0.66f, 0.34f, 0.70f, 0.18f, 0.00f, 0.0f, 0.26f, 0.62f, 1.0f, 8.0f, 0.86f, 0.34f, 0.42f, 0.56f },
         {
             "modulator paths\n  mode loop\n  stage 1 to 18% for 1s curve smooth\n  stage 2 to 100% for 2s curve smooth\n  stage 3 to 42% for 500ms curve linear\nend\n",
             "",
@@ -41,13 +51,14 @@ constexpr std::array<Preset, 12> presets {{
             "modulator air\n  mode loop\n  stage 1 sine 42% 82% for 5s\nend\n",
             "",
             "modulator sizeDivision\n  mode loop\n  stage 1 to 67% for 4s curve linear\n  stage 2 to 83% for 2s curve smooth\n  stage 3 to 50% for 1s curve linear\nend\n",
-            ""
+            "",
+            "modulator spread\n  mode loop\n  stage 1 sine 10% 62% for 5s\nend\n"
         },
-        { true, false, true, true, true, false, false, false, false, false, true, true, false, true, false }
+        { true, false, true, true, true, false, false, false, false, false, true, true, false, true, false, true }
     },
     {
         "Frozen Glass Plain",
-        { 32.0f, 0.92f, 0.95f, -0.18f, 0.80f, 0.12f, 0.92f, 0.48f, 0.12f, 0.72f, 0.34f, 0.86f, 0.0f, 8.0f, 0.78f },
+        { 32.0f, 0.92f, 0.95f, -0.18f, 0.80f, 0.12f, 0.92f, 0.48f, 0.12f, 0.72f, 0.34f, 0.86f, 0.0f, 8.0f, 0.78f, 0.18f, 0.64f, 0.82f },
         {
             "modulator paths\n  mode loop\n  stage 1 to 100% for 9s curve smooth\n  stage 2 to 62% for 1s curve linear\nend\n",
             "modulator size\n  mode loop\n  stage 1 to 88% for 6s curve smooth\n  stage 2 to 100% for 6s curve smooth\nend\n",
@@ -64,7 +75,7 @@ constexpr std::array<Preset, 12> presets {{
     },
     {
         "Dub Nebula",
-        { 3.0f, 0.80f, 0.22f, -0.42f, 0.82f, 0.24f, 0.82f, 0.00f, 0.32f, 0.18f, 0.42f, 0.46f, 1.0f, 8.0f, 0.82f },
+        { 3.0f, 0.80f, 0.22f, -0.42f, 0.82f, 0.24f, 0.82f, 0.00f, 0.32f, 0.18f, 0.42f, 0.46f, 1.0f, 8.0f, 0.82f, 0.08f, 0.18f, 0.38f },
         {
             "modulator paths\n  mode loop\n  stage 1 to 0% for 3s curve smooth\n  stage 2 to 18% for 1s curve linear\nend\n",
             "",
@@ -82,7 +93,7 @@ constexpr std::array<Preset, 12> presets {{
     },
     {
         "Micro Swarm Room",
-        { 32.0f, 0.035f, 0.86f, 0.00f, 0.62f, 0.72f, 0.74f, 0.24f, 0.18f, 0.0f, 0.78f, 0.76f, 0.0f, 8.0f, 0.88f },
+        { 32.0f, 0.035f, 0.86f, 0.00f, 0.62f, 0.72f, 0.74f, 0.24f, 0.18f, 0.0f, 0.78f, 0.76f, 0.0f, 8.0f, 0.88f, 0.86f, 0.82f, 0.28f },
         {
             "modulator paths\n  mode loop\n  stage 1 random 45% 100% for 140ms curve linear\nend\n",
             "modulator size\n  mode loop\n  stage 1 random 0% 12% for 220ms curve smooth\nend\n",
@@ -96,13 +107,14 @@ constexpr std::array<Preset, 12> presets {{
             "", 
             "modulator lowCut\n  mode loop\n  stage 1 random 45% 100% for 600ms curve smooth\nend\n",
             "modulator air\n  mode loop\n  stage 1 random 35% 100% for 400ms curve linear\nend\n",
-            "", "", ""
+            "", "", "",
+            "modulator spread\n  mode loop\n  stage 1 random 45% 100% for 350ms curve smooth\nend\n"
         },
-        { true, true, false, true, true, true, false, true, true, false, true, true, false, false, false }
+        { true, true, false, true, true, true, false, true, true, false, true, true, false, false, false, true }
     },
     {
         "Shimmer Freeze Gate",
-        { 24.0f, 0.64f, 0.98f, 0.36f, 0.72f, 0.20f, 0.90f, 0.86f, 0.00f, 0.42f, 0.30f, 0.88f, 0.65f, 8.0f, 0.74f },
+        { 24.0f, 0.64f, 0.98f, 0.36f, 0.72f, 0.20f, 0.90f, 0.86f, 0.00f, 0.42f, 0.30f, 0.88f, 0.65f, 8.0f, 0.74f, 0.28f, 0.58f, 0.74f },
         {
             "modulator paths\n  mode loop\n  stage 1 to 50% for 1s curve smooth\n  stage 2 to 100% for 1s curve smooth\nend\n",
             "",
@@ -122,7 +134,7 @@ constexpr std::array<Preset, 12> presets {{
     },
     {
         "Subterranean Orbit",
-        { 6.0f, 0.76f, 1.00f, -0.88f, 0.76f, 0.18f, 0.86f, 0.00f, 0.92f, 0.16f, 0.18f, 0.32f, 0.45f, 10.0f, 0.76f },
+        { 6.0f, 0.76f, 1.00f, -0.88f, 0.76f, 0.18f, 0.86f, 0.00f, 0.92f, 0.16f, 0.18f, 0.32f, 0.45f, 10.0f, 0.76f, 0.14f, 0.30f, 0.42f },
         {
             "modulator paths\n  mode loop\n  stage 1 to 8% for 1600ms curve linear\n  stage 2 to 45% for 4s curve smooth\nend\n",
             "modulator size\n  mode loop\n  stage 1 sine 45% 100% for 9s\nend\n",
@@ -140,7 +152,7 @@ constexpr std::array<Preset, 12> presets {{
     },
     {
         "Broken Clock Room",
-        { 13.0f, 0.38f, 0.64f, 0.62f, 0.58f, 0.48f, 0.72f, 0.22f, 0.10f, 0.0f, 0.52f, 0.70f, 1.0f, 6.0f, 0.84f },
+        { 13.0f, 0.38f, 0.64f, 0.62f, 0.58f, 0.48f, 0.72f, 0.22f, 0.10f, 0.0f, 0.52f, 0.70f, 1.0f, 6.0f, 0.84f, 0.74f, 0.92f, 0.22f },
         {
             "modulator paths\n  mode loop\n  stage 1 random 8% 100% for 300ms curve linear\n  stage 2 hold for 200ms\nend\n",
             "",
@@ -155,13 +167,14 @@ constexpr std::array<Preset, 12> presets {{
             "modulator air\n  mode loop\n  stage 1 random 20% 96% for 1200ms curve smooth\nend\n",
             "",
             "modulator sizeDivision\n  mode loop\n  stage 1 random 17% 92% for 700ms curve linear\nend\n",
-            ""
+            "",
+            "modulator spread\n  mode loop\n  stage 1 random 0% 100% for 450ms curve linear\nend\n"
         },
-        { true, false, true, true, true, true, true, false, false, false, true, true, false, true, false }
+        { true, false, true, true, true, true, true, false, false, false, true, true, false, true, false, true }
     },
     {
         "Cathedral Afterimage",
-        { 32.0f, 1.0f, 1.0f, 0.08f, 0.86f, 0.08f, 0.95f, 0.62f, 0.28f, 0.58f, 0.38f, 0.52f, 0.15f, 12.0f, 0.72f },
+        { 32.0f, 1.0f, 1.0f, 0.08f, 0.86f, 0.08f, 0.95f, 0.62f, 0.28f, 0.58f, 0.38f, 0.52f, 0.15f, 12.0f, 0.72f, 0.22f, 0.70f, 0.90f },
         {
             "modulator paths\n  mode loop\n  stage 1 to 100% for 12s curve smooth\n  stage 2 to 72% for 1s curve linear\nend\n",
             "modulator size\n  mode loop\n  stage 1 to 100% for 14s curve smooth\n  stage 2 to 72% for 2s curve smooth\nend\n",
@@ -179,7 +192,7 @@ constexpr std::array<Preset, 12> presets {{
     },
     {
         "Stereo Knife Weather",
-        { 20.0f, 0.58f, 0.72f, 1.00f, 0.70f, 0.30f, 0.84f, 0.16f, 0.22f, 0.0f, 0.50f, 0.72f, 0.35f, 7.0f, 0.82f },
+        { 20.0f, 0.58f, 0.72f, 1.00f, 0.70f, 0.30f, 0.84f, 0.16f, 0.22f, 0.0f, 0.50f, 0.72f, 0.35f, 7.0f, 0.82f, 0.58f, 0.88f, 0.48f },
         {
             "modulator paths\n  mode loop\n  stage 1 sine 30% 100% for 5s\nend\n",
             "modulator size\n  mode loop\n  stage 1 wander 35% 80% for 1200ms curve smooth\nend\n",
@@ -191,13 +204,14 @@ constexpr std::array<Preset, 12> presets {{
             "modulator octaveUp\n  mode loop\n  stage 1 random 0% 38% for 1500ms curve smooth\nend\n",
             "modulator octaveDown\n  mode loop\n  stage 1 random 0% 42% for 1700ms curve smooth\nend\n",
             "",
-            "", "", "", "", ""
+            "", "", "", "", "",
+            "modulator spread\n  mode loop\n  stage 1 sine 12% 92% for 3s\nend\n"
         },
-        { true, true, true, true, false, true, true, true, true, false, false, false, false, false, false }
+        { true, true, true, true, false, true, true, true, true, false, false, false, false, false, false, true }
     },
     {
         "Bass Safe Furnace",
-        { 11.0f, 0.50f, 1.0f, 0.16f, 0.72f, 0.22f, 1.0f, 1.0f, 0.88f, 0.0f, 0.88f, 0.44f, 0.0f, 8.0f, 0.68f },
+        { 11.0f, 0.50f, 1.0f, 0.16f, 0.72f, 0.22f, 1.0f, 1.0f, 0.88f, 0.0f, 0.88f, 0.44f, 0.0f, 8.0f, 0.68f, 0.46f, 0.52f, 0.34f },
         {
             "modulator paths\n  mode loop\n  stage 1 random 20% 100% for 900ms curve smooth\nend\n",
             "modulator size\n  mode loop\n  stage 1 sine 8% 70% for 4s\nend\n",
@@ -217,7 +231,7 @@ constexpr std::array<Preset, 12> presets {{
     },
     {
         "Granular Tide Pool",
-        { 29.0f, 0.16f, 0.58f, -0.30f, 0.64f, 0.62f, 0.86f, 0.38f, 0.28f, 0.12f, 0.72f, 0.82f, 0.0f, 8.0f, 0.84f },
+        { 29.0f, 0.16f, 0.58f, -0.30f, 0.64f, 0.62f, 0.86f, 0.38f, 0.28f, 0.12f, 0.72f, 0.82f, 0.0f, 8.0f, 0.84f, 0.92f, 0.96f, 0.20f },
         {
             "modulator paths\n  mode loop\n  stage 1 wander 30% 100% for 180ms curve linear\nend\n",
             "modulator size\n  mode loop\n  stage 1 wander 0% 42% for 240ms curve smooth\nend\n",
@@ -231,13 +245,14 @@ constexpr std::array<Preset, 12> presets {{
             "modulator freeze\n  mode loop\n  stage 1 random 0% 28% for 900ms curve smooth\nend\n",
             "modulator lowCut\n  mode loop\n  stage 1 random 40% 100% for 1s curve smooth\nend\n",
             "modulator air\n  mode loop\n  stage 1 random 25% 100% for 900ms curve smooth\nend\n",
-            "", "", ""
+            "", "", "",
+            "modulator spread\n  mode loop\n  stage 1 wander 20% 100% for 280ms curve smooth\nend\n"
         },
-        { true, true, true, true, true, true, true, true, true, true, true, true, false, false, false }
+        { true, true, true, true, true, true, true, true, true, true, true, true, false, false, false, true }
     },
     {
         "Manual Wide Hall",
-        { 18.0f, 0.70f, 0.72f, 0.00f, 0.62f, 0.32f, 0.58f, 0.00f, 0.00f, 0.0f, 0.34f, 0.66f, 0.0f, 8.0f, 0.92f },
+        { 18.0f, 0.70f, 0.72f, 0.00f, 0.62f, 0.32f, 0.58f, 0.00f, 0.00f, 0.0f, 0.34f, 0.66f, 0.0f, 8.0f, 0.92f, 0.24f, 0.36f, 0.62f },
         {
             "",
             "",
@@ -588,6 +603,12 @@ juce::AudioProcessorValueTreeState::ParameterLayout ErbeyVerbyAudioProcessor::cr
         juce::NormalisableRange<float> (0.0f, 12.0f, 1.0f), 8.0f));
     params.push_back (std::make_unique<juce::AudioParameterFloat> ("output", "Output",
         juce::NormalisableRange<float> (0.0f, 1.0f, 0.001f), 1.0f));
+    params.push_back (std::make_unique<juce::AudioParameterFloat> ("spread", "Spread",
+        juce::NormalisableRange<float> (0.0f, 1.0f, 0.001f), 0.28f));
+    params.push_back (std::make_unique<juce::AudioParameterFloat> ("matrix", "Matrix",
+        juce::NormalisableRange<float> (0.0f, 1.0f, 0.001f), 0.42f));
+    params.push_back (std::make_unique<juce::AudioParameterFloat> ("earlyLate", "Early/Late",
+        juce::NormalisableRange<float> (0.0f, 1.0f, 0.001f), 0.55f));
 
     return { params.begin(), params.end() };
 }
@@ -645,7 +666,7 @@ void ErbeyVerbyAudioProcessor::prepareToPlay (double sampleRate, int)
     for (auto* smoother : { &pathsSmoothed, &sizeSmoothed, &couplingSmoothed, &skewSmoothed,
                             &feedbackSmoothed, &dampSmoothed, &octaveUpSmoothed, &octaveDownSmoothed, &mixSmoothed,
                             &freezeSmoothed, &lowCutSmoothed, &airSmoothed, &sizeSyncSmoothed, &sizeDivisionSmoothed,
-                            &outputSmoothed })
+                            &outputSmoothed, &spreadSmoothed, &matrixSmoothed, &earlyLateSmoothed })
         smoother->reset (sampleRate, 0.035);
 
     pathsSmoothed.setCurrentAndTargetValue (*parameters.getRawParameterValue ("paths"));
@@ -663,6 +684,9 @@ void ErbeyVerbyAudioProcessor::prepareToPlay (double sampleRate, int)
     sizeSyncSmoothed.setCurrentAndTargetValue (*parameters.getRawParameterValue ("sizeSync"));
     sizeDivisionSmoothed.setCurrentAndTargetValue (*parameters.getRawParameterValue ("sizeDivision"));
     outputSmoothed.setCurrentAndTargetValue (*parameters.getRawParameterValue ("output"));
+    spreadSmoothed.setCurrentAndTargetValue (*parameters.getRawParameterValue ("spread"));
+    matrixSmoothed.setCurrentAndTargetValue (*parameters.getRawParameterValue ("matrix"));
+    earlyLateSmoothed.setCurrentAndTargetValue (*parameters.getRawParameterValue ("earlyLate"));
     visualLevelLeft.store (0.0f, std::memory_order_relaxed);
     visualLevelRight.store (0.0f, std::memory_order_relaxed);
     visualStereoWidth.store (0.0f, std::memory_order_relaxed);
@@ -926,6 +950,9 @@ void ErbeyVerbyAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, j
     sizeSyncSmoothed.setTargetValue (*parameters.getRawParameterValue ("sizeSync"));
     sizeDivisionSmoothed.setTargetValue (*parameters.getRawParameterValue ("sizeDivision"));
     outputSmoothed.setTargetValue (*parameters.getRawParameterValue ("output"));
+    spreadSmoothed.setTargetValue (*parameters.getRawParameterValue ("spread"));
+    matrixSmoothed.setTargetValue (*parameters.getRawParameterValue ("matrix"));
+    earlyLateSmoothed.setTargetValue (*parameters.getRawParameterValue ("earlyLate"));
 
     auto* left = buffer.getWritePointer (0);
     auto* right = totalOutputChannels > 1 ? buffer.getWritePointer (1) : left;
@@ -959,6 +986,9 @@ void ErbeyVerbyAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, j
         const auto sizeSync = processModulatedParameter (12, sizeSyncSmoothed.getNextValue());
         const auto sizeDivision = processModulatedParameter (13, sizeDivisionSmoothed.getNextValue());
         const auto output = processModulatedParameter (14, outputSmoothed.getNextValue());
+        const auto spread = processModulatedParameter (15, spreadSmoothed.getNextValue());
+        const auto matrix = processModulatedParameter (16, matrixSmoothed.getNextValue());
+        const auto earlyLate = processModulatedParameter (17, earlyLateSmoothed.getNextValue());
         const auto activePaths = juce::jmax (1.0f, pathCount);
         const auto sizeNormalised = juce::jlimit (0.0f, 1.0f, (size - 0.03f) / 0.97f);
         const auto smallSpaceDensity = 1.0f - sizeNormalised;
@@ -1003,22 +1033,33 @@ void ErbeyVerbyAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, j
         float sumR = 0.0f;
         float signedSumL = 0.0f;
         float signedSumR = 0.0f;
+        float earlySumL = 0.0f;
+        float earlySumR = 0.0f;
+        float lateSumL = 0.0f;
+        float lateSumR = 0.0f;
         float weightSum = 0.0f;
         float weightPowerSum = 0.0f;
+        float earlyPowerSum = 0.0f;
+        float latePowerSum = 0.0f;
         std::array<float, maxPaths> pathOutL {};
         std::array<float, maxPaths> pathOutR {};
 
         for (int path = 0; path < maxPaths; ++path)
         {
             const auto weight = activeWeight (pathCount, path);
-            const auto pathShape = 1.0f + 0.018f * (float) ((path * 7) % 5);
+            const auto disorder = spread * spread;
+            const auto pathShape = juce::jmap (disorder, 1.0f, 1.0f + 0.018f * (float) ((path * 7) % 5));
             const auto linearSpread = (float) path + 1.0f;
             const auto compactSpread = std::sqrt (linearSpread);
-            const auto pathSpread = compactSpread * smallSpaceDensity + linearSpread * (1.0f - smallSpaceDensity);
+            const auto pathSpreadBase = compactSpread * smallSpaceDensity + linearSpread * (1.0f - smallSpaceDensity);
+            const auto pathOffset = pathDisorder[(size_t) path] * disorder * (0.22f + 0.78f * sizeNormalised);
+            const auto pathSpread = juce::jmax (0.30f, pathSpreadBase + pathOffset * juce::jmax (1.0f, std::sqrt (linearSpread)));
+            const auto leftRatio = juce::jmap (disorder, 1.0f, pathRatios[(size_t) path]);
+            const auto rightRatio = juce::jmap (disorder, 1.0f, 2.0f - pathRatios[(size_t) path]);
             const auto leftDelay = juce::jlimit (8.0f, (float) currentSampleRate * maxDelaySeconds * 0.92f,
-                minimumDelaySamples + leftSpacingSamples * pathSpread * pathRatios[(size_t) path] * pathShape);
+                minimumDelaySamples + leftSpacingSamples * pathSpread * leftRatio * pathShape);
             const auto rightDelay = juce::jlimit (8.0f, (float) currentSampleRate * maxDelaySeconds * 0.92f,
-                minimumDelaySamples + rightSpacingSamples * pathSpread * pathRatios[(size_t) path] / pathShape);
+                minimumDelaySamples + rightSpacingSamples * pathSpread * rightRatio / pathShape);
             pathOutL[(size_t) path] = leftReadFilters[(size_t) path].process (leftPaths[(size_t) path].read (leftDelay), readDampCoefficient);
             pathOutR[(size_t) path] = rightReadFilters[(size_t) path].process (rightPaths[(size_t) path].read (rightDelay), readDampCoefficient);
 
@@ -1027,18 +1068,40 @@ void ErbeyVerbyAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, j
             const auto phase = ((path & 1) == 0) ? 1.0f : -1.0f;
             signedSumL += phase * weight * pathOutL[(size_t) path];
             signedSumR += phase * weight * pathOutR[(size_t) path];
+            const auto pathPosition = (float) path / juce::jmax (1.0f, activePaths - 1.0f);
+            const auto earlyWeight = weight * std::pow (1.0f - juce::jlimit (0.0f, 1.0f, pathPosition), 1.25f);
+            const auto lateWeight = weight * std::pow (juce::jlimit (0.0f, 1.0f, pathPosition), 0.70f);
+            earlySumL += earlyWeight * pathOutL[(size_t) path];
+            earlySumR += earlyWeight * pathOutR[(size_t) path];
+            lateSumL += lateWeight * pathOutL[(size_t) path];
+            lateSumR += lateWeight * pathOutR[(size_t) path];
             weightSum += weight;
             weightPowerSum += weight * weight;
+            earlyPowerSum += earlyWeight * earlyWeight;
+            latePowerSum += lateWeight * lateWeight;
         }
 
         const auto loudnessCompensation = 0.72f + 0.28f * std::sqrt (juce::jlimit (0.0f, 1.0f, (activePaths - 1.0f) / ((float) maxPaths - 1.0f)));
         const auto normaliser = loudnessCompensation / std::sqrt (juce::jmax (1.0f, weightPowerSum));
+        const auto earlyNormaliser = 0.78f / std::sqrt (juce::jmax (1.0f, earlyPowerSum));
+        const auto lateNormaliser = 0.92f / std::sqrt (juce::jmax (1.0f, latePowerSum));
         const auto inverseWeightSum = 1.0f / juce::jmax (1.0f, weightSum);
+        const auto matrixDiffuse = juce::jlimit (0.0f, 1.0f, matrix * 1.45f);
+        const auto matrixOrbit = juce::jlimit (0.0f, 1.0f, matrix * 1.35f - 0.18f);
+        const auto matrixScatter = juce::jlimit (0.0f, 1.0f, matrix * 1.60f - 0.54f);
+        const auto matrixFeedbackTrim = 1.0f - 0.16f * matrixScatter - 0.08f * matrixOrbit;
         const auto earlyAmount = juce::jmap (diffusion, 0.16f, 0.045f);
         const auto inputBloomL = inputCapture * earlyAmount * (dryL + coupling * dryR);
         const auto inputBloomR = inputCapture * earlyAmount * (dryR + coupling * dryL);
-        const auto wetBusL = ((1.0f - diffusion) * sumL + diffusion * signedSumL) * normaliser + inputBloomL;
-        const auto wetBusR = ((1.0f - diffusion) * sumR + diffusion * signedSumR) * normaliser + inputBloomR;
+        const auto earlyBusL = earlySumL * earlyNormaliser + inputBloomL * 1.18f;
+        const auto earlyBusR = earlySumR * earlyNormaliser + inputBloomR * 1.18f;
+        const auto lateDiffuseL = ((1.0f - diffusion) * lateSumL + diffusion * signedSumL) * lateNormaliser + inputBloomL * 0.54f;
+        const auto lateDiffuseR = ((1.0f - diffusion) * lateSumR + diffusion * signedSumR) * lateNormaliser + inputBloomR * 0.54f;
+        const auto fullCloudL = ((1.0f - diffusion) * sumL + diffusion * signedSumL) * normaliser + inputBloomL;
+        const auto fullCloudR = ((1.0f - diffusion) * sumR + diffusion * signedSumR) * normaliser + inputBloomR;
+        const auto lateShape = earlyLate * earlyLate * (3.0f - 2.0f * earlyLate);
+        const auto wetBusL = juce::jmap (lateShape, earlyBusL, juce::jmap (matrixDiffuse, lateDiffuseL, fullCloudL));
+        const auto wetBusR = juce::jmap (lateShape, earlyBusR, juce::jmap (matrixDiffuse, lateDiffuseR, fullCloudR));
         const auto pitchInputL = std::tanh (wetBusL + 0.25f * dryL);
         const auto pitchInputR = std::tanh (wetBusR + 0.25f * dryR);
         const auto pitchSweepSamples = juce::jlimit (0.035f, 0.18f, 0.045f + size * 0.11f) * (float) currentSampleRate;
@@ -1056,23 +1119,38 @@ void ErbeyVerbyAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, j
         for (int path = 0; path < maxPaths; ++path)
         {
             const auto weight = activeWeight (pathCount, path);
+            const auto previous = (path + maxPaths - 1) % maxPaths;
+            const auto next = (path + 1) % maxPaths;
             const auto phase = ((path & 1) == 0) ? 1.0f : -1.0f;
+            const auto clusterL = 0.50f * pathOutL[(size_t) path]
+                                + 0.30f * pathOutL[(size_t) previous]
+                                + 0.20f * pathOutL[(size_t) next];
+            const auto clusterR = 0.50f * pathOutR[(size_t) path]
+                                + 0.30f * pathOutR[(size_t) next]
+                                + 0.20f * pathOutR[(size_t) previous];
+            const auto orbitL = ((path & 1) == 0 ? pathOutL[(size_t) previous] : -pathOutR[(size_t) next]);
+            const auto orbitR = ((path & 1) == 0 ? pathOutR[(size_t) next] : -pathOutL[(size_t) previous]);
             const auto scatteredL = 2.0f * meanL - pathOutL[(size_t) path];
             const auto scatteredR = 2.0f * meanR - pathOutR[(size_t) path];
-            const auto localFeedbackL = juce::jmap (diffusion, pathOutL[(size_t) path], phase * scatteredL);
-            const auto localFeedbackR = juce::jmap (diffusion, pathOutR[(size_t) path], -phase * scatteredR);
+            const auto matrixedL = juce::jmap (matrixOrbit, clusterL, orbitL);
+            const auto matrixedR = juce::jmap (matrixOrbit, clusterR, orbitR);
+            const auto diffuseL = juce::jmap (matrixScatter, matrixedL, phase * scatteredL);
+            const auto diffuseR = juce::jmap (matrixScatter, matrixedR, -phase * scatteredR);
+            const auto localFeedbackL = juce::jmap (matrixDiffuse * diffusion, pathOutL[(size_t) path], diffuseL);
+            const auto localFeedbackR = juce::jmap (matrixDiffuse * diffusion, pathOutR[(size_t) path], diffuseR);
             const auto coupledFeedbackL = (1.0f - coupling) * localFeedbackL + coupling * localFeedbackR;
             const auto coupledFeedbackR = (1.0f - coupling) * localFeedbackR + coupling * localFeedbackL;
             const auto pathFeedbackL = leftFeedbackHighPass[(size_t) path].process (
                 leftDampers[(size_t) path].process (coupledFeedbackL, feedbackToneCoefficient), lowCutCoefficient);
             const auto pathFeedbackR = rightFeedbackHighPass[(size_t) path].process (
                 rightDampers[(size_t) path].process (coupledFeedbackR, feedbackToneCoefficient), lowCutCoefficient);
-            const auto excitation = weight * 0.46f / std::sqrt (juce::jmax (1.0f, weightPowerSum));
+            const auto feedbackDepth = matrixFeedbackTrim * juce::jmap (lateShape, 0.72f, 1.08f);
+            const auto excitation = weight * juce::jmap (lateShape, 0.60f, 0.34f) / std::sqrt (juce::jmax (1.0f, weightPowerSum));
 
             leftPaths[(size_t) path].write (inputCapture * excitation * (dryL + 0.18f * coupling * dryR)
-                                            + effectiveFeedback * weight * pathFeedbackL);
+                                            + effectiveFeedback * feedbackDepth * weight * pathFeedbackL);
             rightPaths[(size_t) path].write (inputCapture * excitation * (dryR + 0.18f * coupling * dryL)
-                                             + effectiveFeedback * weight * pathFeedbackR);
+                                             + effectiveFeedback * feedbackDepth * weight * pathFeedbackR);
         }
 
         const auto dryGain = std::cos (mix * juce::MathConstants<float>::halfPi);

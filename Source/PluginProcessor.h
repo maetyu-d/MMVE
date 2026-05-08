@@ -178,9 +178,12 @@ private:
     juce::SmoothedValue<float, juce::ValueSmoothingTypes::Linear> sizeSyncSmoothed;
     juce::SmoothedValue<float, juce::ValueSmoothingTypes::Linear> sizeDivisionSmoothed;
     juce::SmoothedValue<float, juce::ValueSmoothingTypes::Linear> outputSmoothed;
+    juce::SmoothedValue<float, juce::ValueSmoothingTypes::Linear> spreadSmoothed;
+    juce::SmoothedValue<float, juce::ValueSmoothingTypes::Linear> matrixSmoothed;
+    juce::SmoothedValue<float, juce::ValueSmoothingTypes::Linear> earlyLateSmoothed;
 
-    std::array<ParameterModulation, 15> parameterModulations;
-    std::array<std::atomic<float>, 15> currentModulatedValues;
+    std::array<ParameterModulation, 18> parameterModulations;
+    std::array<std::atomic<float>, 18> currentModulatedValues;
     std::atomic<float> visualLevelLeft { 0.0f };
     std::atomic<float> visualLevelRight { 0.0f };
     std::atomic<float> visualStereoWidth { 0.0f };

@@ -75,6 +75,9 @@ private:
     Control air;
     Control sizeSync;
     Control sizeDivision;
+    Control spread;
+    Control matrix;
+    Control earlyLate;
     Control output;
     Control octaveUp;
     Control octaveDown;

@@ -17,6 +17,11 @@ void ErbeyVerbyAudioProcessorEditor::KnobLookAndFeel::drawRotarySlider (juce::Gr
     const auto arcRadius = radius - lineWidth * 0.5f;
     const auto angle = rotaryStartAngle + sliderPosProportional * (rotaryEndAngle - rotaryStartAngle);
 
+    juce::ColourGradient shadow (juce::Colour (0x62000000), centre.x, centre.y + radius * 0.35f,
+                                 juce::Colours::transparentBlack, centre.x, centre.y + radius * 1.20f, true);
+    g.setGradientFill (shadow);
+    g.fillEllipse (centre.x - radius * 1.08f, centre.y - radius * 0.82f, radius * 2.16f, radius * 2.16f);
+
     juce::ColourGradient body (juce::Colour (0xff313a42), centre.x, centre.y - radius * 0.15f,
                                juce::Colour (0xff07090b), centre.x, centre.y + radius, true);
     body.addColour (0.32, juce::Colour (0xff1a2229));
@@ -24,10 +29,10 @@ void ErbeyVerbyAudioProcessorEditor::KnobLookAndFeel::drawRotarySlider (juce::Gr
     g.setGradientFill (body);
     g.fillEllipse (centre.x - radius, centre.y - radius, radius * 2.0f, radius * 2.0f);
 
-    g.setColour (juce::Colour (0x44e9f8ff));
-    g.drawEllipse (centre.x - radius, centre.y - radius, radius * 2.0f, radius * 2.0f, 1.0f);
+    g.setColour (juce::Colour (0x55e9f8ff));
+    g.drawEllipse (centre.x - radius, centre.y - radius, radius * 2.0f, radius * 2.0f, 1.1f);
 
-    g.setColour (juce::Colour (0x22ffffff));
+    g.setColour (juce::Colour (0x2cffffff));
     g.drawEllipse (centre.x - radius * 0.72f, centre.y - radius * 0.72f, radius * 1.44f, radius * 1.44f, 1.2f);
     g.setColour (juce::Colour (0x24000000));
     g.drawEllipse (centre.x - radius * 0.86f, centre.y - radius * 0.86f, radius * 1.72f, radius * 1.72f, 2.0f);
@@ -242,7 +247,7 @@ ErbeyVerbyAudioProcessorEditor::ErbeyVerbyAudioProcessorEditor (ErbeyVerbyAudioP
     title.setColour (juce::Label::textColourId, juce::Colour (0xfff5f8fb));
     addAndMakeVisible (title);
 
-    subtitle.setText ("morphing space echo", juce::dontSendNotification);
+    subtitle.setText ("matd.space", juce::dontSendNotification);
     subtitle.setJustificationType (juce::Justification::centredRight);
     subtitle.setFont (juce::FontOptions (13.0f));
     subtitle.setColour (juce::Label::textColourId, juce::Colour (0xff8d9ba7));
@@ -250,6 +255,9 @@ ErbeyVerbyAudioProcessorEditor::ErbeyVerbyAudioProcessorEditor (ErbeyVerbyAudioP
 
     setupControl (paths, "Paths", "paths");
     setupControl (size, "Size", "size");
+    setupControl (spread, "Spread", "spread");
+    setupControl (matrix, "Matrix", "matrix");
+    setupControl (earlyLate, "Early/Late", "earlyLate");
     setupControl (sizeSync, "Sync", "sizeSync");
     setupControl (sizeDivision, "Div", "sizeDivision");
     setupControl (coupling, "Coupling", "coupling");
@@ -264,6 +272,35 @@ ErbeyVerbyAudioProcessorEditor::ErbeyVerbyAudioProcessorEditor (ErbeyVerbyAudioP
     setupControl (mix, "Mix", "mix");
     setupControl (output, "Output", "output");
 
+    const auto setAccent = [] (Control& control, juce::Colour accent)
+    {
+        control.slider.setColour (juce::Slider::rotarySliderFillColourId, accent);
+        control.slider.setColour (juce::Slider::rotarySliderOutlineColourId, accent.withAlpha (0.18f));
+    };
+
+    const auto topology = juce::Colour (0xff66d9ff);
+    const auto timing = juce::Colour (0xffaeb8ff);
+    const auto stereo = juce::Colour (0xff72e6c4);
+    const auto sustain = juce::Colour (0xffffc36a);
+    const auto tone = juce::Colour (0xffb6d8c8);
+    const auto pitch = juce::Colour (0xffd7a8ff);
+    const auto level = juce::Colour (0xffedf6ff);
+
+    for (auto* control : { &paths, &spread, &matrix, &earlyLate })
+        setAccent (*control, topology);
+    for (auto* control : { &size, &sizeSync, &sizeDivision })
+        setAccent (*control, timing);
+    for (auto* control : { &coupling, &skew })
+        setAccent (*control, stereo);
+    for (auto* control : { &feedback, &freeze })
+        setAccent (*control, sustain);
+    for (auto* control : { &damping, &lowCut, &air })
+        setAccent (*control, tone);
+    for (auto* control : { &octaveUp, &octaveDown })
+        setAccent (*control, pitch);
+    for (auto* control : { &mix, &output })
+        setAccent (*control, level);
+
     setSize (960, 500);
     startTimerHz (30);
 }
@@ -277,7 +314,7 @@ void ErbeyVerbyAudioProcessorEditor::setupControl (Control& control, const juce:
     control.slider.setColour (juce::Slider::rotarySliderFillColourId, juce::Colour (0xff66d9ff));
     control.slider.setColour (juce::Slider::rotarySliderOutlineColourId, juce::Colour (0xff202a33));
     control.slider.setColour (juce::Slider::thumbColourId, juce::Colour (0xfff6f8fb));
-    control.slider.setColour (juce::Slider::textBoxTextColourId, juce::Colour (0xffdce7ef));
+    control.slider.setColour (juce::Slider::textBoxTextColourId, juce::Colour (0xfff0f6fb));
     control.slider.setColour (juce::Slider::textBoxBackgroundColourId, juce::Colours::transparentBlack);
     control.slider.setColour (juce::Slider::textBoxOutlineColourId, juce::Colours::transparentBlack);
     addAndMakeVisible (control.slider);
@@ -290,8 +327,8 @@ void ErbeyVerbyAudioProcessorEditor::setupControl (Control& control, const juce:
 
     control.label.setText (name, juce::dontSendNotification);
     control.label.setJustificationType (juce::Justification::centred);
-    control.label.setFont (juce::FontOptions (13.5f, juce::Font::plain));
-    control.label.setColour (juce::Label::textColourId, juce::Colour (0xffc5d0d9));
+    control.label.setFont (juce::FontOptions (13.5f, juce::Font::bold));
+    control.label.setColour (juce::Label::textColourId, juce::Colour (0xffd9e3eb));
     addAndMakeVisible (control.label);
 
     control.attachment = std::make_unique<SliderAttachment> (audioProcessor.parameters, parameterId, control.slider);
@@ -320,6 +357,9 @@ void ErbeyVerbyAudioProcessorEditor::timerCallback()
 
     updateScriptIndicator (paths);
     updateScriptIndicator (size);
+    updateScriptIndicator (spread);
+    updateScriptIndicator (matrix);
+    updateScriptIndicator (earlyLate);
     updateScriptIndicator (sizeSync);
     updateScriptIndicator (sizeDivision);
     updateScriptIndicator (coupling);
@@ -336,6 +376,9 @@ void ErbeyVerbyAudioProcessorEditor::timerCallback()
 
     updateModulatedSlider (paths);
     updateModulatedSlider (size);
+    updateModulatedSlider (spread);
+    updateModulatedSlider (matrix);
+    updateModulatedSlider (earlyLate);
     updateModulatedSlider (sizeSync);
     updateModulatedSlider (sizeDivision);
     updateModulatedSlider (coupling);
@@ -435,64 +478,87 @@ void ErbeyVerbyAudioProcessorEditor::paint (juce::Graphics& g)
     g.fillEllipse (halo.withY (halo.getY() - 80.0f));
 
     auto panel = getLocalBounds().toFloat().reduced (18.0f);
-    juce::ColourGradient glass (juce::Colour (0xcc26333d), panel.getTopLeft(),
-                                juce::Colour (0xcc080a0c), panel.getBottomRight(), false);
-    glass.addColour (0.40, juce::Colour (0xcc141b21));
-    glass.addColour (0.82, juce::Colour (0xcc0a0d10));
-    g.setGradientFill (glass);
+    juce::ColourGradient rainbow (juce::Colour (0xd838d9ff), panel.getTopLeft(),
+                                  juce::Colour (0xd8ff4f8a), panel.getBottomRight(), false);
+    rainbow.addColour (0.16, juce::Colour (0xd86a7cff));
+    rainbow.addColour (0.32, juce::Colour (0xd8c95dff));
+    rainbow.addColour (0.49, juce::Colour (0xd8ff7a5c));
+    rainbow.addColour (0.66, juce::Colour (0xd8ffd35f));
+    rainbow.addColour (0.82, juce::Colour (0xd86dffb5));
+    g.setGradientFill (rainbow);
+    g.fillRoundedRectangle (panel, 8.0f);
+
+    juce::ColourGradient depth (juce::Colour (0x8a050a0e), panel.getTopLeft(),
+                                juce::Colour (0xc6030507), panel.getBottomRight(), false);
+    depth.addColour (0.45, juce::Colour (0x71101924));
+    g.setGradientFill (depth);
     g.fillRoundedRectangle (panel, 8.0f);
 
     auto gloss = panel.reduced (1.0f).withTrimmedBottom (panel.getHeight() * 0.58f);
-    juce::ColourGradient glossGradient (juce::Colour (0x30ffffff), gloss.getTopLeft(),
+    juce::ColourGradient glossGradient (juce::Colour (0x26ffffff), gloss.getTopLeft(),
                                         juce::Colours::transparentWhite, gloss.getBottomLeft(), false);
     g.setGradientFill (glossGradient);
     g.fillRoundedRectangle (gloss, 8.0f);
 
-    g.setColour (juce::Colour (0x55d7ecff));
+    auto content = getLocalBounds().reduced (38, 30);
+    auto headerArea = content.removeFromTop (48);
+    juce::ignoreUnused (headerArea);
+    content.removeFromTop (12);
+    auto upperWell = content.removeFromTop (168).toFloat().reduced (6.0f, 3.0f);
+    auto lowerWell = content.removeFromTop (168).toFloat().reduced (6.0f, 3.0f);
+    auto combinedWell = upperWell.getUnion (lowerWell).expanded (2.0f, 4.0f);
+
+    juce::ColourGradient wellGradient (juce::Colour (0x70070b10), combinedWell.getTopLeft(),
+                                       juce::Colour (0x96030406), combinedWell.getBottomRight(), false);
+    wellGradient.addColour (0.50, juce::Colour (0x68111820));
+    g.setGradientFill (wellGradient);
+    g.fillRoundedRectangle (combinedWell, 9.0f);
+
+    g.setColour (juce::Colour (0x18ffffff));
+    g.drawRoundedRectangle (combinedWell, 9.0f, 0.8f);
+
+    juce::ColourGradient rowSheen (juce::Colour (0x1affffff), upperWell.getTopLeft(),
+                                   juce::Colours::transparentWhite, upperWell.getBottomLeft(), false);
+    g.setGradientFill (rowSheen);
+    g.fillRoundedRectangle (upperWell.withHeight (upperWell.getHeight() * 0.36f), 8.0f);
+
+    g.setGradientFill (rowSheen);
+    g.fillRoundedRectangle (lowerWell.withHeight (lowerWell.getHeight() * 0.30f), 8.0f);
+
+    juce::ColourGradient bottomShade (juce::Colours::transparentBlack, panel.getCentreX(), panel.getY() + panel.getHeight() * 0.35f,
+                                      juce::Colour (0x74000000), panel.getCentreX(), panel.getBottom(), false);
+    g.setGradientFill (bottomShade);
+    g.fillRoundedRectangle (panel, 8.0f);
+
+    g.setColour (juce::Colour (0x68ffffff));
     g.drawRoundedRectangle (panel, 8.0f, 1.0f);
 
-    g.setColour (juce::Colour (0x26000000));
+    g.setColour (juce::Colour (0x38000000));
     g.drawRoundedRectangle (panel.reduced (1.5f), 7.0f, 1.2f);
 
-    g.setColour (juce::Colour (0x16000000));
-    g.fillRoundedRectangle (panel.withY (panel.getBottom() - 58.0f).withHeight (40.0f), 8.0f);
+    g.setColour (juce::Colour (0x20000000));
+    g.fillRoundedRectangle (panel.withY (panel.getBottom() - 62.0f).withHeight (44.0f), 8.0f);
 
-    const auto dotCount = 32;
-    const auto active = juce::jlimit (1.0f, (float) dotCount, displayedPaths <= 0.0f ? getDisplayedPaths() : displayedPaths);
-    const auto stripWidth = 248.0f;
-    const auto spacing = stripWidth / (float) (dotCount - 1);
-    const auto y = panel.getY() + 43.0f;
-    const auto startX = panel.getCentreX() - stripWidth * 0.5f;
+    auto display = juce::Rectangle<float> (panel.getCentreX() - 124.0f, panel.getY() + 25.0f, 248.0f, 28.0f);
+    juce::ColourGradient displayGlass (juce::Colour (0x22000000), display.getTopLeft(),
+                                       juce::Colour (0x46000000), display.getBottomRight(), false);
+    g.setGradientFill (displayGlass);
+    g.fillRoundedRectangle (display, 10.0f);
+    g.setColour (juce::Colour (0x18ffffff));
+    g.drawRoundedRectangle (display, 10.0f, 0.8f);
 
-    for (int i = 0; i < dotCount; ++i)
-    {
-        const auto weight = juce::jlimit (0.0f, 1.0f, active - (float) i);
-        const auto radius = 1.8f + weight * 1.6f;
-        const auto centre = juce::Point<float> (startX + spacing * (float) i, y);
-        const auto colour = juce::Colour (0xff42c7ff).withAlpha (0.14f + weight * 0.76f);
+    auto meter = juce::Rectangle<float> (display.getCentreX() - 104.0f, display.getCentreY() - 4.5f, 208.0f, 9.0f);
+    g.setColour (juce::Colour (0x34000000));
+    g.fillRoundedRectangle (meter, 4.0f);
+    g.setColour (juce::Colour (0x24ffffff));
+    g.drawRoundedRectangle (meter, 4.0f, 0.7f);
 
-        if (weight > 0.0f)
-        {
-            g.setColour (colour.withAlpha (0.18f * weight));
-            g.fillEllipse (centre.x - radius * 2.2f, centre.y - radius * 2.2f, radius * 4.4f, radius * 4.4f);
-        }
-
-        g.setColour (colour);
-        g.fillEllipse (centre.x - radius, centre.y - radius, radius * 2.0f, radius * 2.0f);
-    }
-
-    auto meter = juce::Rectangle<float> (panel.getCentreX() - 132.0f, panel.getY() + 58.0f, 264.0f, 18.0f);
-    g.setColour (juce::Colour (0x28000000));
-    g.fillRoundedRectangle (meter, 5.0f);
-    g.setColour (juce::Colour (0x33d7ecff));
-    g.drawRoundedRectangle (meter, 5.0f, 0.8f);
-
-    auto meterInner = meter.reduced (5.0f, 5.0f);
+    auto meterInner = meter.reduced (4.0f, 3.0f);
     auto leftMeter = meterInner.removeFromLeft ((meterInner.getWidth() - 4.0f) * 0.5f);
     meterInner.removeFromLeft (4.0f);
     auto rightMeter = meterInner;
     auto centreLine = meter.withWidth (1.0f).withCentre (meter.getCentre());
-    g.setColour (juce::Colour (0x44d7ecff));
+    g.setColour (juce::Colour (0x36d7ecff));
     g.fillRect (centreLine);
 
     const auto leftWidth = leftMeter.getWidth() * juce::jlimit (0.0f, 1.0f, displayedLevelLeft);
@@ -504,7 +570,7 @@ void ErbeyVerbyAudioProcessorEditor::paint (juce::Graphics& g)
 
     const auto widthX = meter.getCentreX() + juce::jmap (juce::jlimit (0.0f, 1.0f, displayedStereoWidth), -54.0f, 54.0f);
     g.setColour (juce::Colour (0xffeef5ff).withAlpha (0.42f + displayedStereoWidth * 0.45f));
-    g.fillEllipse (widthX - 3.0f, meter.getCentreY() - 3.0f, 6.0f, 6.0f);
+    g.fillEllipse (widthX - 2.4f, meter.getCentreY() - 2.4f, 4.8f, 4.8f);
 
     if (displayedLimiter > 0.001f)
     {
@@ -531,22 +597,25 @@ void ErbeyVerbyAudioProcessorEditor::resized()
         control.slider.setBounds (bounds);
     };
 
-    const auto upperWidth = upper.getWidth() / 7;
+    const auto upperWidth = upper.getWidth() / 9;
     layoutControl (paths, upper.removeFromLeft (upperWidth).reduced (8));
+    layoutControl (spread, upper.removeFromLeft (upperWidth).reduced (8));
+    layoutControl (matrix, upper.removeFromLeft (upperWidth).reduced (8));
+    layoutControl (earlyLate, upper.removeFromLeft (upperWidth).reduced (8));
     layoutControl (size, upper.removeFromLeft (upperWidth).reduced (8));
     layoutControl (sizeSync, upper.removeFromLeft (upperWidth).reduced (8));
     layoutControl (sizeDivision, upper.removeFromLeft (upperWidth).reduced (8));
     layoutControl (coupling, upper.removeFromLeft (upperWidth).reduced (8));
     layoutControl (skew, upper.removeFromLeft (upperWidth).reduced (8));
-    layoutControl (freeze, upper.reduced (8));
 
-    const auto lowerWidth = lower.getWidth() / 8;
+    const auto lowerWidth = lower.getWidth() / 9;
     layoutControl (feedback, lower.removeFromLeft (lowerWidth).reduced (8));
+    layoutControl (freeze, lower.removeFromLeft (lowerWidth).reduced (8));
     layoutControl (damping, lower.removeFromLeft (lowerWidth).reduced (8));
     layoutControl (lowCut, lower.removeFromLeft (lowerWidth).reduced (8));
     layoutControl (air, lower.removeFromLeft (lowerWidth).reduced (8));
-    layoutControl (mix, lower.removeFromLeft (lowerWidth).reduced (8));
-    layoutControl (output, lower.removeFromLeft (lowerWidth).reduced (8));
     layoutControl (octaveUp, lower.removeFromLeft (lowerWidth).reduced (8));
-    layoutControl (octaveDown, lower.reduced (8));
+    layoutControl (octaveDown, lower.removeFromLeft (lowerWidth).reduced (8));
+    layoutControl (mix, lower.removeFromLeft (lowerWidth).reduced (8));
+    layoutControl (output, lower.reduced (8));
 }
