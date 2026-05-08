@@ -130,6 +130,16 @@ float parseLevel (const juce::String& token)
 
     return juce::jlimit (0.0f, 1.0f, text.getFloatValue());
 }
+
+bool looksLikeNumberOrPercent (const juce::String& token)
+{
+    const auto text = token.trim();
+    if (text.isEmpty())
+        return false;
+
+    const auto numeric = text.endsWithChar ('%') ? text.dropLastCharacters (1) : text;
+    return numeric.containsOnly ("0123456789.+-");
+}
 }
 
 void ErbeyVerbyAudioProcessor::DelayPath::prepare (int size)
@@ -203,7 +213,7 @@ float ErbeyVerbyAudioProcessor::PitchDelayLine::process (float input, float pitc
     return shifted;
 }
 
-void ErbeyVerbyAudioProcessor::ParameterModulation::setScript (const juce::String& newScript, double sampleRate)
+juce::String ErbeyVerbyAudioProcessor::ParameterModulation::setScript (const juce::String& newScript, double sampleRate)
 {
     script = newScript;
     stages.clear();
@@ -216,9 +226,9 @@ void ErbeyVerbyAudioProcessor::ParameterModulation::setScript (const juce::Strin
     juce::StringArray lines;
     lines.addLines (newScript);
 
-    for (auto line : lines)
+    for (int lineIndex = 0; lineIndex < lines.size(); ++lineIndex)
     {
-        line = line.upToFirstOccurrenceOf ("#", false, false).trim();
+        auto line = lines[lineIndex].upToFirstOccurrenceOf ("#", false, false).trim();
         if (line.isEmpty())
             continue;
 
@@ -229,31 +239,109 @@ void ErbeyVerbyAudioProcessor::ParameterModulation::setScript (const juce::Strin
         if (tokens.size() == 0)
             continue;
 
-        if (tokens[0].equalsIgnoreCase ("mode") && tokens.size() > 1)
-            loop = ! tokens[1].equalsIgnoreCase ("one_shot");
+        const auto lineError = [&] (const juce::String& message)
+        {
+            return "Line " + juce::String (lineIndex + 1) + ": " + message;
+        };
 
-        if (! tokens[0].equalsIgnoreCase ("stage"))
+        if (tokens[0].equalsIgnoreCase ("modulator") || tokens[0].equalsIgnoreCase ("end"))
             continue;
+
+        if (tokens[0].equalsIgnoreCase ("mode") && tokens.size() > 1)
+        {
+            loop = ! tokens[1].equalsIgnoreCase ("one_shot");
+            continue;
+        }
+
+        const auto isStageLine = tokens[0].equalsIgnoreCase ("stage");
+        const auto commandIndex = isStageLine ? 2 : 0;
+        if (isStageLine && tokens.size() < 3)
+            return lineError ("stage needs a command, for example 'stage 1 to 80% for 1s'.");
+
+        if (commandIndex >= tokens.size())
+            return lineError ("missing command.");
+
+        const auto command = tokens[commandIndex].toLowerCase();
+        if (! (command == "to" || command == "hold" || command == "random" || command == "sine" || command == "wander"))
+            return lineError ("unknown command '" + tokens[commandIndex] + "'. Use to, hold, random, sine, or wander.");
 
         ModStage next;
         next.target = stages.empty() ? 1.0f : stages.back().target;
+        next.minimum = 0.0f;
+        next.maximum = 1.0f;
         next.samples = (int) std::round (0.25 * sampleRate);
         next.smooth = true;
+        int optionStart = commandIndex + 1;
 
-        for (int i = 1; i < tokens.size(); ++i)
+        if (command == "to")
         {
-            if (tokens[i].equalsIgnoreCase ("to") && i + 1 < tokens.size())
-                next.target = parseLevel (tokens[++i]);
-            else if ((tokens[i].equalsIgnoreCase ("for") || tokens[i].equalsIgnoreCase ("in")) && i + 1 < tokens.size())
+            if (optionStart >= tokens.size())
+                return lineError ("'to' needs a target value.");
+
+            if (tokens[optionStart].equalsIgnoreCase ("random"))
+            {
+                if (optionStart + 2 >= tokens.size())
+                    return lineError ("'to random' needs minimum and maximum values.");
+
+                next.type = ModStage::Type::random;
+                next.minimum = parseLevel (tokens[optionStart + 1]);
+                next.maximum = parseLevel (tokens[optionStart + 2]);
+                optionStart += 3;
+            }
+            else
+            {
+                if (! looksLikeNumberOrPercent (tokens[optionStart]))
+                    return lineError ("target value must be 0..1 or a percentage.");
+
+                next.type = ModStage::Type::ramp;
+                next.target = parseLevel (tokens[optionStart]);
+                optionStart += 1;
+            }
+        }
+        else if (command == "hold")
+        {
+            next.type = ModStage::Type::hold;
+        }
+        else
+        {
+            if (optionStart + 1 >= tokens.size())
+                return lineError ("'" + command + "' needs minimum and maximum values.");
+
+            if (! looksLikeNumberOrPercent (tokens[optionStart]) || ! looksLikeNumberOrPercent (tokens[optionStart + 1]))
+                return lineError ("'" + command + "' values must be 0..1 or percentages.");
+
+            next.type = command == "random" ? ModStage::Type::random
+                      : command == "sine"   ? ModStage::Type::sine
+                                            : ModStage::Type::wander;
+            next.minimum = parseLevel (tokens[optionStart]);
+            next.maximum = parseLevel (tokens[optionStart + 1]);
+            optionStart += 2;
+        }
+
+        if (next.minimum > next.maximum)
+            std::swap (next.minimum, next.maximum);
+
+        for (int i = optionStart; i < tokens.size(); ++i)
+        {
+            if ((tokens[i].equalsIgnoreCase ("for") || tokens[i].equalsIgnoreCase ("in")) && i + 1 < tokens.size())
                 next.samples = juce::jmax (1, (int) std::round (parseTimeToSeconds (tokens[++i]) * sampleRate));
             else if (tokens[i].equalsIgnoreCase ("curve") && i + 1 < tokens.size())
                 next.smooth = ! tokens[++i].equalsIgnoreCase ("linear");
+            else
+                return lineError ("unexpected token '" + tokens[i] + "'.");
         }
 
         stages.push_back (next);
     }
 
     active = ! stages.empty();
+    return {};
+}
+
+float ErbeyVerbyAudioProcessor::ParameterModulation::nextRandom()
+{
+    randomState = randomState * 1664525u + 1013904223u;
+    return (float) ((randomState >> 8) & 0x00ffffffu) / (float) 0x00ffffffu;
 }
 
 float ErbeyVerbyAudioProcessor::ParameterModulation::process (float baseNormalised)
@@ -269,9 +357,27 @@ float ErbeyVerbyAudioProcessor::ParameterModulation::process (float baseNormalis
     }
 
     auto& currentStage = stages[(size_t) stage];
+    if (sample == 0)
+    {
+        if (currentStage.type == ModStage::Type::random || currentStage.type == ModStage::Type::wander)
+            currentStage.target = juce::jmap (nextRandom(), currentStage.minimum, currentStage.maximum);
+        else if (currentStage.type == ModStage::Type::hold)
+            currentStage.target = start;
+    }
+
     const auto progress = juce::jlimit (0.0f, 1.0f, (float) sample / (float) juce::jmax (1, currentStage.samples));
     const auto shaped = currentStage.smooth ? progress * progress * (3.0f - 2.0f * progress) : progress;
-    current = start + (currentStage.target - start) * shaped;
+
+    if (currentStage.type == ModStage::Type::sine)
+    {
+        const auto phase = progress * juce::MathConstants<float>::twoPi;
+        const auto wave = 0.5f + 0.5f * std::sin (phase - juce::MathConstants<float>::halfPi);
+        current = juce::jmap (wave, currentStage.minimum, currentStage.maximum);
+    }
+    else
+    {
+        current = start + (currentStage.target - start) * shaped;
+    }
 
     if (++sample >= currentStage.samples)
     {
@@ -484,8 +590,18 @@ void ErbeyVerbyAudioProcessor::setFabricScriptForParameter (const juce::String& 
     if (! juce::isPositiveAndBelow (index, (int) parameterModulations.size()))
         return;
 
+    ParameterModulation parsed;
+    if (parsed.setScript (script, currentSampleRate).isNotEmpty())
+        return;
+
     const juce::ScopedLock lock (modulationLock);
-    parameterModulations[(size_t) index].setScript (script, currentSampleRate);
+    parameterModulations[(size_t) index] = std::move (parsed);
+}
+
+juce::String ErbeyVerbyAudioProcessor::validateFabricScript (const juce::String& script) const
+{
+    ParameterModulation parsed;
+    return parsed.setScript (script, currentSampleRate);
 }
 
 juce::String ErbeyVerbyAudioProcessor::getFabricScriptForParameter (const juce::String& parameterId) const

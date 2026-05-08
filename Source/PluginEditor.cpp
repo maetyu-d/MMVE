@@ -118,16 +118,28 @@ public:
             : processor.getFabricScriptForParameter (parameterId));
         addAndMakeVisible (script);
 
-        help.setText ("Use Fabric-style stages. Values are normalized for this parameter: 0..1 or percentages. Click Apply to restart the envelope.",
+        help.setText ("Commands: to 80%, random 20% 80%, hold, sine 10% 90%, wander 20% 80%.",
                       juce::dontSendNotification);
         help.setFont (juce::FontOptions (13.0f));
         help.setColour (juce::Label::textColourId, juce::Colour (0xff8f9aa5));
         help.setJustificationType (juce::Justification::centredLeft);
         addAndMakeVisible (help);
 
+        error.setFont (juce::FontOptions (13.0f, juce::Font::bold));
+        error.setColour (juce::Label::textColourId, juce::Colour (0xffff6f61));
+        error.setJustificationType (juce::Justification::centredLeft);
+        addAndMakeVisible (error);
+
         apply.setButtonText ("Apply");
         apply.onClick = [this]
         {
+            const auto validationError = processor.validateFabricScript (script.getText());
+            if (validationError.isNotEmpty())
+            {
+                error.setText (validationError, juce::dontSendNotification);
+                return;
+            }
+
             processor.setFabricScriptForParameter (parameterId, script.getText());
             if (auto* window = findParentComponentOfClass<juce::DialogWindow>())
                 window->exitModalState (0);
@@ -151,14 +163,15 @@ public:
         };
         addAndMakeVisible (cancel);
 
-        setSize (560, 430);
+        setSize (620, 470);
     }
 
     void resized() override
     {
         auto area = getLocalBounds().reduced (18);
         title.setBounds (area.removeFromTop (30));
-        help.setBounds (area.removeFromBottom (34));
+        help.setBounds (area.removeFromBottom (30));
+        error.setBounds (area.removeFromBottom (28));
         auto buttons = area.removeFromBottom (42);
         apply.setBounds (buttons.removeFromRight (94).reduced (4));
         clear.setBounds (buttons.removeFromRight (94).reduced (4));
@@ -176,9 +189,10 @@ private:
     {
         return "modulator " + parameterId + "\n"
                "  mode loop\n"
-               "  stage 1 to 100% for 1s curve smooth\n"
-               "  stage 2 to 25% for 700ms curve linear\n"
-               "  stage 3 to 70% for 2s curve smooth\n"
+               "  stage 1 random 20% 80% for 700ms curve smooth\n"
+               "  stage 2 hold for 300ms\n"
+               "  stage 3 sine 10% 90% for 2s\n"
+               "  stage 4 wander 25% 75% for 900ms curve smooth\n"
                "end\n";
     }
 
@@ -187,6 +201,7 @@ private:
     juce::String parameterName;
     juce::Label title;
     juce::Label help;
+    juce::Label error;
     juce::TextEditor script;
     juce::TextButton apply;
     juce::TextButton clear;

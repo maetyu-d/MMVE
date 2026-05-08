@@ -32,6 +32,7 @@ public:
     void setStateInformation (const void* data, int sizeInBytes) override;
 
     void setFabricScriptForParameter (const juce::String& parameterId, const juce::String& script);
+    juce::String validateFabricScript (const juce::String& script) const;
     juce::String getFabricScriptForParameter (const juce::String& parameterId) const;
     void setFabricScriptActive (const juce::String& parameterId, bool active);
     bool isFabricScriptActive (const juce::String& parameterId) const;
@@ -85,7 +86,19 @@ private:
 
     struct ModStage
     {
+        enum class Type
+        {
+            ramp,
+            hold,
+            sine,
+            random,
+            wander
+        };
+
+        Type type = Type::ramp;
         float target = 0.0f;
+        float minimum = 0.0f;
+        float maximum = 1.0f;
         int samples = 1;
         bool smooth = true;
     };
@@ -101,9 +114,13 @@ private:
         float start = 0.0f;
         float current = 0.0f;
         bool initialised = false;
+        uint32_t randomState = 0x12345678u;
 
-        void setScript (const juce::String& newScript, double sampleRate);
+        juce::String setScript (const juce::String& newScript, double sampleRate);
         float process (float baseNormalised);
+
+    private:
+        float nextRandom();
     };
 
     float processModulatedParameter (int parameterIndex, float baseValue);
