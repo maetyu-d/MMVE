@@ -391,7 +391,7 @@ void ErbeyVerbyAudioProcessorEditor::paint (juce::Graphics& g)
     const auto stripWidth = 176.0f;
     const auto spacing = stripWidth / (float) (dotCount - 1);
     const auto y = panel.getY() + 43.0f;
-    const auto startX = panel.getRight() - 268.0f;
+    const auto startX = panel.getCentreX() - stripWidth * 0.5f;
 
     for (int i = 0; i < dotCount; ++i)
     {
