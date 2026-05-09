@@ -958,8 +958,8 @@ void ErbeyVerbyAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, j
     auto* right = totalOutputChannels > 1 ? buffer.getWritePointer (1) : left;
     const auto hasStereoInput = totalInputChannels > 1;
     auto hostBpm = 120.0f;
-    if (auto* playHead = getPlayHead())
-        if (auto position = playHead->getPosition())
+    if (auto* hostPlayHead = getPlayHead())
+        if (auto position = hostPlayHead->getPosition())
             if (auto bpm = position->getBpm())
                 hostBpm = juce::jlimit (20.0f, 320.0f, (float) *bpm);
     const auto beatSeconds = 60.0f / hostBpm;

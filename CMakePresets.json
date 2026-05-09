@@ -1,0 +1,56 @@
+{
+  "version": 6,
+  "cmakeMinimumRequired": {
+    "major": 3,
+    "minor": 22,
+    "patch": 0
+  },
+  "configurePresets": [
+    {
+      "name": "windows-vs2022-debug",
+      "displayName": "Windows MSVC Debug VST3",
+      "generator": "NMake Makefiles",
+      "binaryDir": "${sourceDir}/build-win",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Debug",
+        "MMVE_PLUGIN_FORMATS": "VST3",
+        "MMVE_JUCE_PATH": "$env{JUCE_DIR}"
+      }
+    },
+    {
+      "name": "windows-vs2022-release",
+      "displayName": "Windows MSVC Release VST3",
+      "inherits": [
+        "windows-vs2022-debug"
+      ],
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Release"
+      }
+    },
+    {
+      "name": "macos-debug",
+      "displayName": "macOS Debug",
+      "generator": "Unix Makefiles",
+      "binaryDir": "${sourceDir}/build-macos",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Debug",
+        "MMVE_PLUGIN_FORMATS": "AU;VST3;Standalone",
+        "MMVE_JUCE_PATH": "$env{JUCE_DIR}"
+      }
+    }
+  ],
+  "buildPresets": [
+    {
+      "name": "windows-debug",
+      "configurePreset": "windows-vs2022-debug"
+    },
+    {
+      "name": "windows-release",
+      "configurePreset": "windows-vs2022-release"
+    },
+    {
+      "name": "macos-debug",
+      "configurePreset": "macos-debug"
+    }
+  ]
+}
