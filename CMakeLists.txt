@@ -39,6 +39,7 @@ endif()
 juce_add_plugin(MMVE
     COMPANY_NAME "matd.space"
     COMPANY_WEBSITE "https://matd.space"
+    COMPANY_EMAIL "hello@matd.space"
     BUNDLE_ID "space.matd.mmve"
     IS_SYNTH FALSE
     NEEDS_MIDI_INPUT FALSE

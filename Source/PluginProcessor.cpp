@@ -36,239 +36,276 @@ struct Preset
     std::array<bool, 18> active;
 };
 
-constexpr std::array<Preset, 12> presets {{
+constexpr std::array<Preset, 13> presets {{
     {
-        "Clockwork Bloom",
-        { 18.0f, 0.52f, 0.70f, 0.24f, 0.66f, 0.34f, 0.70f, 0.18f, 0.00f, 0.0f, 0.26f, 0.62f, 1.0f, 8.0f, 0.86f, 0.34f, 0.42f, 0.56f },
+        "Prism Clockwork",
+        { 6.0f, 0.72f, 0.52f, 0.20f, 0.72f, 0.28f, 0.78f, 0.04f, 0.14f, 0.0f, 0.34f, 0.58f, 1.0f, 8.0f, 0.82f, 0.18f, 0.20f, 0.32f },
         {
-            "modulator paths\n  mode loop\n  stage 1 to 18% for 1s curve smooth\n  stage 2 to 100% for 2s curve smooth\n  stage 3 to 42% for 500ms curve linear\nend\n",
-            "",
-            "modulator coupling\n  mode loop\n  stage 1 sine 18% 92% for 4s\nend\n",
-            "modulator skew\n  mode loop\n  stage 1 sine 20% 80% for 3s\nend\n",
-            "modulator feedback\n  mode loop\n  stage 1 sine 48% 76% for 6s\nend\n",
-            "", "", "", "", "",
-            "modulator lowCut\n  mode loop\n  stage 1 sine 12% 45% for 8s\nend\n",
-            "modulator air\n  mode loop\n  stage 1 sine 42% 82% for 5s\nend\n",
+            "modulator paths\n  mode loop\n  stage 1 to 4% for 3s curve smooth\n  stage 2 to 22% for 900ms curve linear\nend\n",
+            "modulator size\n  mode loop\n  stage 1 to 62% for 4s curve smooth\n  stage 2 to 88% for 2s curve smooth\nend\n",
+            "modulator coupling\n  mode loop\n  stage 1 sine 20% 82% for 6s\nend\n",
+            "modulator skew\n  mode loop\n  stage 1 sine 35% 65% for 5s\nend\n",
+            "modulator feedback\n  mode loop\n  stage 1 sine 55% 80% for 7s\nend\n",
+            "", "", "", "", "", "", "",
             "",
             "modulator sizeDivision\n  mode loop\n  stage 1 to 67% for 4s curve linear\n  stage 2 to 83% for 2s curve smooth\n  stage 3 to 50% for 1s curve linear\nend\n",
             "",
-            "modulator spread\n  mode loop\n  stage 1 sine 10% 62% for 5s\nend\n"
+            "modulator spread\n  mode loop\n  stage 1 sine 0% 34% for 8s\nend\n",
+            "modulator matrix\n  mode loop\n  stage 1 sine 8% 34% for 11s\nend\n",
+            "modulator earlyLate\n  mode loop\n  stage 1 sine 14% 46% for 9s\nend\n"
         },
-        { true, false, true, true, true, false, false, false, false, false, true, true, false, true, false, true }
+        { true, true, true, true, true, false, false, false, false, false, false, false, false, true, false, true, true, true }
     },
     {
-        "Frozen Glass Plain",
-        { 32.0f, 0.92f, 0.95f, -0.18f, 0.80f, 0.12f, 0.92f, 0.48f, 0.12f, 0.72f, 0.34f, 0.86f, 0.0f, 8.0f, 0.78f, 0.18f, 0.64f, 0.82f },
+        "Late Glass Bloom",
+        { 32.0f, 0.94f, 0.96f, -0.08f, 0.82f, 0.10f, 0.92f, 0.42f, 0.08f, 0.48f, 0.30f, 0.86f, 0.0f, 8.0f, 0.76f, 0.42f, 0.76f, 0.94f },
         {
-            "modulator paths\n  mode loop\n  stage 1 to 100% for 9s curve smooth\n  stage 2 to 62% for 1s curve linear\nend\n",
-            "modulator size\n  mode loop\n  stage 1 to 88% for 6s curve smooth\n  stage 2 to 100% for 6s curve smooth\nend\n",
-            "modulator coupling\n  mode loop\n  stage 1 sine 62% 100% for 11s\nend\n",
-            "modulator skew\n  mode loop\n  stage 1 sine 28% 72% for 13s\nend\n",
-            "", "",
-            "modulator mix\n  mode loop\n  stage 1 to 100% for 5s curve smooth\n  stage 2 to 64% for 900ms curve linear\nend\n",
-            "modulator octaveUp\n  mode loop\n  stage 1 sine 8% 72% for 10s\nend\n",
+            "modulator paths\n  mode loop\n  stage 1 to 100% for 12s curve smooth\n  stage 2 to 70% for 1200ms curve linear\nend\n",
+            "modulator size\n  mode loop\n  stage 1 to 78% for 7s curve smooth\n  stage 2 to 100% for 8s curve smooth\nend\n",
+            "modulator coupling\n  mode loop\n  stage 1 sine 72% 100% for 13s\nend\n",
+            "modulator skew\n  mode loop\n  stage 1 sine 42% 58% for 17s\nend\n",
+            "modulator feedback\n  mode loop\n  stage 1 sine 68% 86% for 19s\nend\n",
+            "modulator damping\n  mode loop\n  stage 1 sine 0% 28% for 15s\nend\n",
+            "modulator mix\n  mode loop\n  stage 1 sine 78% 100% for 10s\nend\n",
+            "modulator octaveUp\n  mode loop\n  stage 1 sine 8% 62% for 16s\nend\n",
             "",
-            "modulator freeze\n  mode loop\n  stage 1 to 0% for 1s curve linear\n  stage 2 to 96% for 8s curve smooth\n  stage 3 hold for 3s\nend\n",
-            "", "", "", "", ""
+            "modulator freeze\n  mode loop\n  stage 1 to 0% for 2s curve smooth\n  stage 2 to 82% for 9s curve smooth\n  stage 3 hold for 5s\n  stage 4 to 12% for 3s curve smooth\nend\n",
+            "", "", "", "", "",
+            "modulator spread\n  mode loop\n  stage 1 sine 24% 62% for 12s\nend\n",
+            "modulator matrix\n  mode loop\n  stage 1 sine 55% 92% for 18s\nend\n",
+            "modulator earlyLate\n  mode loop\n  stage 1 sine 78% 100% for 21s\nend\n"
         },
-        { true, true, true, true, false, false, true, true, false, true, false, false, false, false, false }
+        { true, true, true, true, true, true, true, true, false, true, false, false, false, false, false, true, true, true }
     },
     {
-        "Dub Nebula",
-        { 3.0f, 0.80f, 0.22f, -0.42f, 0.82f, 0.24f, 0.82f, 0.00f, 0.32f, 0.18f, 0.42f, 0.46f, 1.0f, 8.0f, 0.82f, 0.08f, 0.18f, 0.38f },
+        "Dub Gravity Well",
+        { 3.0f, 0.86f, 0.18f, -0.58f, 0.84f, 0.20f, 0.84f, 0.0f, 0.52f, 0.10f, 0.50f, 0.38f, 1.0f, 9.0f, 0.78f, 0.10f, 0.18f, 0.24f },
         {
-            "modulator paths\n  mode loop\n  stage 1 to 0% for 3s curve smooth\n  stage 2 to 18% for 1s curve linear\nend\n",
+            "modulator paths\n  mode loop\n  stage 1 to 0% for 2500ms curve smooth\n  stage 2 to 14% for 700ms curve linear\nend\n",
             "",
-            "modulator coupling\n  mode loop\n  stage 1 to 0% for 2s curve linear\n  stage 2 to 88% for 700ms curve smooth\n  stage 3 to 12% for 3s curve smooth\nend\n",
-            "modulator skew\n  mode loop\n  stage 1 sine 8% 92% for 6s\nend\n",
-            "modulator feedback\n  mode loop\n  stage 1 to 55% for 1s curve smooth\n  stage 2 to 86% for 2s curve smooth\n  stage 3 to 40% for 700ms curve linear\nend\n",
+            "modulator coupling\n  mode loop\n  stage 1 to 0% for 2s curve linear\n  stage 2 to 80% for 800ms curve smooth\n  stage 3 to 10% for 3s curve smooth\nend\n",
+            "modulator skew\n  mode loop\n  stage 1 sine 5% 95% for 7s\nend\n",
+            "modulator feedback\n  mode loop\n  stage 1 to 48% for 1s curve smooth\n  stage 2 to 86% for 2s curve smooth\n  stage 3 to 38% for 700ms curve linear\nend\n",
             "",
-            "modulator mix\n  mode loop\n  stage 1 to 42% for 600ms curve linear\n  stage 2 to 96% for 1200ms curve smooth\n  stage 3 to 55% for 900ms curve smooth\nend\n",
-            "", 
-            "modulator octaveDown\n  mode loop\n  stage 1 sine 0% 58% for 5s\nend\n",
-            "modulator freeze\n  mode loop\n  stage 1 hold for 2500ms\n  stage 2 to 48% for 400ms curve smooth\n  stage 3 to 0% for 1300ms curve smooth\nend\n",
-            "", "", "", "", ""
-        },
-        { true, false, true, true, true, false, true, false, true, true, false, false, false, false, false }
-    },
-    {
-        "Micro Swarm Room",
-        { 32.0f, 0.035f, 0.86f, 0.00f, 0.62f, 0.72f, 0.74f, 0.24f, 0.18f, 0.0f, 0.78f, 0.76f, 0.0f, 8.0f, 0.88f, 0.86f, 0.82f, 0.28f },
-        {
-            "modulator paths\n  mode loop\n  stage 1 random 45% 100% for 140ms curve linear\nend\n",
-            "modulator size\n  mode loop\n  stage 1 random 0% 12% for 220ms curve smooth\nend\n",
+            "modulator mix\n  mode loop\n  stage 1 to 38% for 600ms curve linear\n  stage 2 to 96% for 1200ms curve smooth\n  stage 3 to 52% for 900ms curve smooth\nend\n",
             "",
-            "modulator skew\n  mode loop\n  stage 1 random 0% 100% for 420ms curve smooth\nend\n",
-            "modulator feedback\n  mode loop\n  stage 1 random 30% 70% for 300ms curve smooth\nend\n",
-            "modulator damping\n  mode loop\n  stage 1 sine 45% 92% for 3s\nend\n",
-            "", 
-            "modulator octaveUp\n  mode loop\n  stage 1 random 0% 45% for 520ms curve smooth\nend\n",
-            "modulator octaveDown\n  mode loop\n  stage 1 random 0% 35% for 650ms curve linear\nend\n",
-            "", 
-            "modulator lowCut\n  mode loop\n  stage 1 random 45% 100% for 600ms curve smooth\nend\n",
-            "modulator air\n  mode loop\n  stage 1 random 35% 100% for 400ms curve linear\nend\n",
+            "modulator octaveDown\n  mode loop\n  stage 1 sine 8% 72% for 5s\nend\n",
+            "modulator freeze\n  mode loop\n  stage 1 hold for 2500ms\n  stage 2 to 36% for 420ms curve smooth\n  stage 3 to 0% for 1300ms curve smooth\nend\n",
             "", "", "",
-            "modulator spread\n  mode loop\n  stage 1 random 45% 100% for 350ms curve smooth\nend\n"
+            "modulator sizeDivision\n  mode loop\n  stage 1 to 75% for 4s curve linear\n  stage 2 to 58% for 1500ms curve smooth\nend\n",
+            "",
+            "modulator spread\n  mode loop\n  stage 1 sine 0% 22% for 6s\nend\n",
+            "modulator matrix\n  mode loop\n  stage 1 sine 0% 32% for 9s\nend\n",
+            "modulator earlyLate\n  mode loop\n  stage 1 sine 8% 42% for 8s\nend\n"
         },
-        { true, true, false, true, true, true, false, true, true, false, true, true, false, false, false, true }
+        { true, false, true, true, true, false, true, false, true, true, false, false, false, true, false, true, true, true }
     },
     {
-        "Shimmer Freeze Gate",
-        { 24.0f, 0.64f, 0.98f, 0.36f, 0.72f, 0.20f, 0.90f, 0.86f, 0.00f, 0.42f, 0.30f, 0.88f, 0.65f, 8.0f, 0.74f, 0.28f, 0.58f, 0.74f },
+        "Micro Swarm Chamber",
+        { 32.0f, 0.04f, 0.82f, 0.0f, 0.58f, 0.76f, 0.76f, 0.22f, 0.16f, 0.0f, 0.82f, 0.78f, 0.0f, 8.0f, 0.84f, 0.94f, 0.86f, 0.18f },
         {
-            "modulator paths\n  mode loop\n  stage 1 to 50% for 1s curve smooth\n  stage 2 to 100% for 1s curve smooth\nend\n",
+            "modulator paths\n  mode loop\n  stage 1 random 55% 100% for 120ms curve linear\nend\n",
+            "modulator size\n  mode loop\n  stage 1 random 0% 12% for 180ms curve smooth\nend\n",
             "",
-            "modulator coupling\n  mode loop\n  stage 1 sine 35% 100% for 3s\nend\n",
-            "modulator skew\n  mode loop\n  stage 1 sine 10% 90% for 1500ms\nend\n",
-            "", "",
+            "modulator skew\n  mode loop\n  stage 1 random 0% 100% for 320ms curve smooth\nend\n",
+            "modulator feedback\n  mode loop\n  stage 1 random 26% 66% for 260ms curve smooth\nend\n",
+            "modulator damping\n  mode loop\n  stage 1 random 48% 96% for 620ms curve smooth\nend\n",
+            "",
+            "modulator octaveUp\n  mode loop\n  stage 1 random 0% 42% for 480ms curve smooth\nend\n",
+            "modulator octaveDown\n  mode loop\n  stage 1 random 0% 34% for 520ms curve linear\nend\n",
+            "",
+            "modulator lowCut\n  mode loop\n  stage 1 random 50% 100% for 600ms curve smooth\nend\n",
+            "modulator air\n  mode loop\n  stage 1 random 30% 100% for 360ms curve linear\nend\n",
+            "", "", "",
+            "modulator spread\n  mode loop\n  stage 1 random 62% 100% for 260ms curve smooth\nend\n",
+            "modulator matrix\n  mode loop\n  stage 1 random 50% 100% for 420ms curve smooth\nend\n",
+            "modulator earlyLate\n  mode loop\n  stage 1 random 0% 42% for 500ms curve smooth\nend\n"
+        },
+        { true, true, false, true, true, true, false, true, true, false, true, true, false, false, false, true, true, true }
+    },
+    {
+        "Shimmer Lock Gate",
+        { 24.0f, 0.66f, 0.98f, 0.34f, 0.74f, 0.18f, 0.90f, 0.90f, 0.0f, 0.44f, 0.28f, 0.90f, 0.55f, 8.0f, 0.72f, 0.36f, 0.62f, 0.78f },
+        {
+            "modulator paths\n  mode loop\n  stage 1 to 45% for 1s curve smooth\n  stage 2 to 100% for 1s curve smooth\nend\n",
+            "",
+            "modulator coupling\n  mode loop\n  stage 1 sine 45% 100% for 3s\nend\n",
+            "modulator skew\n  mode loop\n  stage 1 sine 12% 88% for 1500ms\nend\n",
+            "",
+            "",
             "modulator mix\n  mode loop\n  stage 1 sine 55% 100% for 4s\nend\n",
-            "modulator octaveUp\n  mode loop\n  stage 1 sine 12% 100% for 2200ms\nend\n",
+            "modulator octaveUp\n  mode loop\n  stage 1 sine 20% 100% for 2200ms\nend\n",
             "",
-            "modulator freeze\n  mode loop\n  stage 1 to 0% for 800ms curve linear\n  stage 2 to 88% for 600ms curve smooth\n  stage 3 hold for 900ms\n  stage 4 to 5% for 700ms curve smooth\nend\n",
+            "modulator freeze\n  mode loop\n  stage 1 to 0% for 800ms curve linear\n  stage 2 to 90% for 600ms curve smooth\n  stage 3 hold for 900ms\n  stage 4 to 5% for 700ms curve smooth\nend\n",
             "",
             "modulator air\n  mode loop\n  stage 1 sine 62% 100% for 5s\nend\n",
-            "modulator sizeSync\n  mode loop\n  stage 1 sine 20% 100% for 8s\nend\n",
-            "", ""
+            "modulator sizeSync\n  mode loop\n  stage 1 sine 30% 100% for 8s\nend\n",
+            "",
+            "",
+            "modulator spread\n  mode loop\n  stage 1 sine 20% 58% for 6s\nend\n",
+            "modulator matrix\n  mode loop\n  stage 1 sine 40% 84% for 7s\nend\n",
+            "modulator earlyLate\n  mode loop\n  stage 1 to 38% for 800ms curve smooth\n  stage 2 to 92% for 2600ms curve smooth\nend\n"
         },
-        { true, false, true, true, false, false, true, true, false, true, false, true, true, false, false }
+        { true, false, true, true, false, false, true, true, false, true, false, true, true, false, false, true, true, true }
     },
     {
         "Subterranean Orbit",
-        { 6.0f, 0.76f, 1.00f, -0.88f, 0.76f, 0.18f, 0.86f, 0.00f, 0.92f, 0.16f, 0.18f, 0.32f, 0.45f, 10.0f, 0.76f, 0.14f, 0.30f, 0.42f },
+        { 7.0f, 0.80f, 1.0f, -0.86f, 0.78f, 0.16f, 0.84f, 0.0f, 0.94f, 0.14f, 0.16f, 0.30f, 0.40f, 10.0f, 0.74f, 0.18f, 0.42f, 0.50f },
         {
-            "modulator paths\n  mode loop\n  stage 1 to 8% for 1600ms curve linear\n  stage 2 to 45% for 4s curve smooth\nend\n",
-            "modulator size\n  mode loop\n  stage 1 sine 45% 100% for 9s\nend\n",
-            "modulator coupling\n  mode loop\n  stage 1 sine 70% 100% for 7s\nend\n",
+            "modulator paths\n  mode loop\n  stage 1 to 8% for 1600ms curve linear\n  stage 2 to 48% for 4s curve smooth\nend\n",
+            "modulator size\n  mode loop\n  stage 1 sine 50% 100% for 9s\nend\n",
+            "modulator coupling\n  mode loop\n  stage 1 sine 72% 100% for 7s\nend\n",
             "modulator skew\n  mode loop\n  stage 1 sine 0% 100% for 5s\nend\n",
-            "modulator feedback\n  mode loop\n  stage 1 sine 52% 82% for 8s\nend\n",
+            "modulator feedback\n  mode loop\n  stage 1 sine 52% 84% for 8s\nend\n",
             "",
-            "", "",
-            "modulator octaveDown\n  mode loop\n  stage 1 sine 35% 100% for 6s\nend\n",
-            "modulator freeze\n  mode loop\n  stage 1 random 0% 38% for 2s curve smooth\nend\n",
-            "modulator lowCut\n  mode loop\n  stage 1 sine 4% 32% for 12s\nend\n",
-            "", "", "", ""
+            "",
+            "",
+            "modulator octaveDown\n  mode loop\n  stage 1 sine 40% 100% for 6s\nend\n",
+            "modulator freeze\n  mode loop\n  stage 1 random 0% 34% for 2s curve smooth\nend\n",
+            "modulator lowCut\n  mode loop\n  stage 1 sine 4% 28% for 12s\nend\n",
+            "", "", "", "",
+            "modulator spread\n  mode loop\n  stage 1 sine 4% 34% for 10s\nend\n",
+            "modulator matrix\n  mode loop\n  stage 1 sine 18% 62% for 9s\nend\n",
+            "modulator earlyLate\n  mode loop\n  stage 1 sine 26% 72% for 11s\nend\n"
         },
-        { true, true, true, true, true, false, false, false, true, true, true, false, false, false, false }
+        { true, true, true, true, true, false, false, false, true, true, true, false, false, false, false, true, true, true }
     },
     {
-        "Broken Clock Room",
-        { 13.0f, 0.38f, 0.64f, 0.62f, 0.58f, 0.48f, 0.72f, 0.22f, 0.10f, 0.0f, 0.52f, 0.70f, 1.0f, 6.0f, 0.84f, 0.74f, 0.92f, 0.22f },
+        "Broken Matrix Room",
+        { 15.0f, 0.36f, 0.62f, 0.60f, 0.58f, 0.52f, 0.74f, 0.18f, 0.12f, 0.0f, 0.56f, 0.72f, 1.0f, 6.0f, 0.80f, 0.82f, 0.98f, 0.18f },
         {
-            "modulator paths\n  mode loop\n  stage 1 random 8% 100% for 300ms curve linear\n  stage 2 hold for 200ms\nend\n",
+            "modulator paths\n  mode loop\n  stage 1 random 8% 100% for 260ms curve linear\n  stage 2 hold for 180ms\nend\n",
             "",
-            "modulator coupling\n  mode loop\n  stage 1 random 0% 100% for 900ms curve smooth\nend\n",
-            "modulator skew\n  mode loop\n  stage 1 random 0% 100% for 700ms curve linear\nend\n",
-            "modulator feedback\n  mode loop\n  stage 1 random 32% 78% for 800ms curve smooth\nend\n",
-            "modulator damping\n  mode loop\n  stage 1 random 18% 88% for 1300ms curve smooth\nend\n",
-            "modulator mix\n  mode loop\n  stage 1 random 48% 95% for 500ms curve smooth\nend\n",
-            "", "",
-            "",
-            "modulator lowCut\n  mode loop\n  stage 1 random 15% 82% for 1s curve smooth\nend\n",
+            "modulator coupling\n  mode loop\n  stage 1 random 0% 100% for 760ms curve smooth\nend\n",
+            "modulator skew\n  mode loop\n  stage 1 random 0% 100% for 520ms curve linear\nend\n",
+            "modulator feedback\n  mode loop\n  stage 1 random 28% 76% for 720ms curve smooth\nend\n",
+            "modulator damping\n  mode loop\n  stage 1 random 18% 92% for 1100ms curve smooth\nend\n",
+            "modulator mix\n  mode loop\n  stage 1 random 48% 94% for 500ms curve smooth\nend\n",
+            "", "", "",
+            "modulator lowCut\n  mode loop\n  stage 1 random 15% 88% for 1s curve smooth\nend\n",
             "modulator air\n  mode loop\n  stage 1 random 20% 96% for 1200ms curve smooth\nend\n",
             "",
             "modulator sizeDivision\n  mode loop\n  stage 1 random 17% 92% for 700ms curve linear\nend\n",
             "",
-            "modulator spread\n  mode loop\n  stage 1 random 0% 100% for 450ms curve linear\nend\n"
+            "modulator spread\n  mode loop\n  stage 1 random 0% 100% for 360ms curve linear\nend\n",
+            "modulator matrix\n  mode loop\n  stage 1 random 0% 100% for 420ms curve smooth\nend\n",
+            "modulator earlyLate\n  mode loop\n  stage 1 random 0% 70% for 580ms curve smooth\nend\n"
         },
-        { true, false, true, true, true, true, true, false, false, false, true, true, false, true, false, true }
+        { true, false, true, true, true, true, true, false, false, false, true, true, false, true, false, true, true, true }
     },
     {
         "Cathedral Afterimage",
-        { 32.0f, 1.0f, 1.0f, 0.08f, 0.86f, 0.08f, 0.95f, 0.62f, 0.28f, 0.58f, 0.38f, 0.52f, 0.15f, 12.0f, 0.72f, 0.22f, 0.70f, 0.90f },
+        { 32.0f, 1.0f, 1.0f, 0.05f, 0.86f, 0.08f, 0.94f, 0.58f, 0.22f, 0.62f, 0.36f, 0.58f, 0.10f, 12.0f, 0.70f, 0.34f, 0.82f, 0.98f },
         {
-            "modulator paths\n  mode loop\n  stage 1 to 100% for 12s curve smooth\n  stage 2 to 72% for 1s curve linear\nend\n",
-            "modulator size\n  mode loop\n  stage 1 to 100% for 14s curve smooth\n  stage 2 to 72% for 2s curve smooth\nend\n",
-            "modulator coupling\n  mode loop\n  stage 1 sine 65% 100% for 13s\nend\n",
-            "modulator skew\n  mode loop\n  stage 1 sine 40% 60% for 17s\nend\n",
-            "modulator feedback\n  mode loop\n  stage 1 sine 68% 88% for 19s\nend\n",
-            "modulator damping\n  mode loop\n  stage 1 sine 0% 35% for 15s\nend\n",
+            "modulator paths\n  mode loop\n  stage 1 to 100% for 14s curve smooth\n  stage 2 to 76% for 1s curve linear\nend\n",
+            "modulator size\n  mode loop\n  stage 1 to 100% for 16s curve smooth\n  stage 2 to 80% for 3s curve smooth\nend\n",
+            "modulator coupling\n  mode loop\n  stage 1 sine 70% 100% for 15s\nend\n",
+            "modulator skew\n  mode loop\n  stage 1 sine 44% 56% for 17s\nend\n",
+            "modulator feedback\n  mode loop\n  stage 1 sine 70% 88% for 21s\nend\n",
+            "modulator damping\n  mode loop\n  stage 1 sine 0% 30% for 18s\nend\n",
             "",
-            "modulator octaveUp\n  mode loop\n  stage 1 sine 0% 72% for 16s\nend\n",
+            "modulator octaveUp\n  mode loop\n  stage 1 sine 0% 68% for 18s\nend\n",
             "",
-            "modulator freeze\n  mode loop\n  stage 1 to 0% for 2s curve smooth\n  stage 2 to 85% for 9s curve smooth\n  stage 3 hold for 5s\nend\n",
-            "", "", "", "", ""
+            "modulator freeze\n  mode loop\n  stage 1 to 0% for 3s curve smooth\n  stage 2 to 88% for 10s curve smooth\n  stage 3 hold for 6s\nend\n",
+            "", "", "", "", "",
+            "modulator spread\n  mode loop\n  stage 1 sine 18% 48% for 16s\nend\n",
+            "modulator matrix\n  mode loop\n  stage 1 sine 66% 100% for 22s\nend\n",
+            "modulator earlyLate\n  mode loop\n  stage 1 sine 88% 100% for 24s\nend\n"
         },
-        { true, true, true, true, true, true, false, true, false, true, false, false, false, false, false }
+        { true, true, true, true, true, true, false, true, false, true, false, false, false, false, false, true, true, true }
     },
     {
         "Stereo Knife Weather",
-        { 20.0f, 0.58f, 0.72f, 1.00f, 0.70f, 0.30f, 0.84f, 0.16f, 0.22f, 0.0f, 0.50f, 0.72f, 0.35f, 7.0f, 0.82f, 0.58f, 0.88f, 0.48f },
+        { 21.0f, 0.56f, 0.70f, 1.0f, 0.68f, 0.30f, 0.82f, 0.18f, 0.24f, 0.0f, 0.54f, 0.74f, 0.28f, 7.0f, 0.78f, 0.62f, 0.92f, 0.46f },
         {
-            "modulator paths\n  mode loop\n  stage 1 sine 30% 100% for 5s\nend\n",
-            "modulator size\n  mode loop\n  stage 1 wander 35% 80% for 1200ms curve smooth\nend\n",
+            "modulator paths\n  mode loop\n  stage 1 sine 28% 100% for 5s\nend\n",
+            "modulator size\n  mode loop\n  stage 1 wander 32% 82% for 1100ms curve smooth\nend\n",
             "modulator coupling\n  mode loop\n  stage 1 sine 0% 100% for 2200ms\nend\n",
             "modulator skew\n  mode loop\n  stage 1 sine 0% 100% for 1400ms\nend\n",
             "",
             "modulator damping\n  mode loop\n  stage 1 sine 12% 78% for 3s\nend\n",
             "modulator mix\n  mode loop\n  stage 1 sine 45% 100% for 6s\nend\n",
-            "modulator octaveUp\n  mode loop\n  stage 1 random 0% 38% for 1500ms curve smooth\nend\n",
-            "modulator octaveDown\n  mode loop\n  stage 1 random 0% 42% for 1700ms curve smooth\nend\n",
-            "",
-            "", "", "", "", "",
-            "modulator spread\n  mode loop\n  stage 1 sine 12% 92% for 3s\nend\n"
+            "modulator octaveUp\n  mode loop\n  stage 1 random 0% 42% for 1500ms curve smooth\nend\n",
+            "modulator octaveDown\n  mode loop\n  stage 1 random 0% 46% for 1700ms curve smooth\nend\n",
+            "", "", "", "", "", "",
+            "modulator spread\n  mode loop\n  stage 1 sine 10% 96% for 3s\nend\n",
+            "modulator matrix\n  mode loop\n  stage 1 sine 20% 100% for 2500ms\nend\n",
+            "modulator earlyLate\n  mode loop\n  stage 1 sine 12% 84% for 3300ms\nend\n"
         },
-        { true, true, true, true, false, true, true, true, true, false, false, false, false, false, false, true }
+        { true, true, true, true, false, true, true, true, true, false, false, false, false, false, false, true, true, true }
     },
     {
         "Bass Safe Furnace",
-        { 11.0f, 0.50f, 1.0f, 0.16f, 0.72f, 0.22f, 1.0f, 1.0f, 0.88f, 0.0f, 0.88f, 0.44f, 0.0f, 8.0f, 0.68f, 0.46f, 0.52f, 0.34f },
+        { 12.0f, 0.48f, 0.94f, 0.14f, 0.70f, 0.20f, 0.94f, 0.76f, 0.88f, 0.0f, 0.90f, 0.42f, 0.0f, 8.0f, 0.66f, 0.50f, 0.58f, 0.30f },
         {
-            "modulator paths\n  mode loop\n  stage 1 random 20% 100% for 900ms curve smooth\nend\n",
+            "modulator paths\n  mode loop\n  stage 1 random 18% 100% for 800ms curve smooth\nend\n",
             "modulator size\n  mode loop\n  stage 1 sine 8% 70% for 4s\nend\n",
             "modulator coupling\n  mode loop\n  stage 1 sine 30% 100% for 5s\nend\n",
             "modulator skew\n  mode loop\n  stage 1 random 15% 85% for 1300ms curve smooth\nend\n",
-            "modulator feedback\n  mode loop\n  stage 1 random 28% 76% for 900ms curve smooth\nend\n",
-            "modulator damping\n  mode loop\n  stage 1 sine 8% 70% for 3200ms\nend\n",
+            "modulator feedback\n  mode loop\n  stage 1 random 24% 74% for 900ms curve smooth\nend\n",
+            "modulator damping\n  mode loop\n  stage 1 sine 8% 68% for 3200ms\nend\n",
             "",
-            "modulator octaveUp\n  mode loop\n  stage 1 sine 0% 100% for 1400ms\nend\n",
-            "modulator octaveDown\n  mode loop\n  stage 1 sine 15% 100% for 1900ms\nend\n",
+            "modulator octaveUp\n  mode loop\n  stage 1 sine 0% 85% for 1400ms\nend\n",
+            "modulator octaveDown\n  mode loop\n  stage 1 sine 18% 100% for 1900ms\nend\n",
             "",
-            "modulator lowCut\n  mode loop\n  stage 1 sine 62% 100% for 5s\nend\n",
-            "modulator air\n  mode loop\n  stage 1 sine 18% 72% for 6s\nend\n",
-            "", "", ""
+            "modulator lowCut\n  mode loop\n  stage 1 sine 70% 100% for 5s\nend\n",
+            "modulator air\n  mode loop\n  stage 1 sine 15% 66% for 6s\nend\n",
+            "", "", "",
+            "modulator spread\n  mode loop\n  stage 1 sine 16% 70% for 4s\nend\n",
+            "modulator matrix\n  mode loop\n  stage 1 sine 22% 78% for 5s\nend\n",
+            "modulator earlyLate\n  mode loop\n  stage 1 random 0% 55% for 900ms curve smooth\nend\n"
         },
-        { true, true, true, true, true, true, false, true, true, false, true, true, false, false, false }
+        { true, true, true, true, true, true, false, true, true, false, true, true, false, false, false, true, true, true }
     },
     {
         "Granular Tide Pool",
-        { 29.0f, 0.16f, 0.58f, -0.30f, 0.64f, 0.62f, 0.86f, 0.38f, 0.28f, 0.12f, 0.72f, 0.82f, 0.0f, 8.0f, 0.84f, 0.92f, 0.96f, 0.20f },
+        { 30.0f, 0.16f, 0.56f, -0.30f, 0.62f, 0.64f, 0.84f, 0.36f, 0.30f, 0.10f, 0.74f, 0.84f, 0.0f, 8.0f, 0.80f, 0.96f, 1.0f, 0.16f },
         {
-            "modulator paths\n  mode loop\n  stage 1 wander 30% 100% for 180ms curve linear\nend\n",
-            "modulator size\n  mode loop\n  stage 1 wander 0% 42% for 240ms curve smooth\nend\n",
-            "modulator coupling\n  mode loop\n  stage 1 random 0% 100% for 500ms curve smooth\nend\n",
-            "modulator skew\n  mode loop\n  stage 1 random 0% 100% for 360ms curve linear\nend\n",
-            "modulator feedback\n  mode loop\n  stage 1 wander 30% 78% for 500ms curve smooth\nend\n",
-            "modulator damping\n  mode loop\n  stage 1 random 35% 95% for 700ms curve smooth\nend\n",
-            "modulator mix\n  mode loop\n  stage 1 random 60% 100% for 380ms curve smooth\nend\n",
-            "modulator octaveUp\n  mode loop\n  stage 1 random 0% 76% for 600ms curve smooth\nend\n",
-            "modulator octaveDown\n  mode loop\n  stage 1 random 0% 62% for 750ms curve smooth\nend\n",
+            "modulator paths\n  mode loop\n  stage 1 wander 32% 100% for 160ms curve linear\nend\n",
+            "modulator size\n  mode loop\n  stage 1 wander 0% 44% for 220ms curve smooth\nend\n",
+            "modulator coupling\n  mode loop\n  stage 1 random 0% 100% for 420ms curve smooth\nend\n",
+            "modulator skew\n  mode loop\n  stage 1 random 0% 100% for 320ms curve linear\nend\n",
+            "modulator feedback\n  mode loop\n  stage 1 wander 26% 76% for 460ms curve smooth\nend\n",
+            "modulator damping\n  mode loop\n  stage 1 random 35% 98% for 620ms curve smooth\nend\n",
+            "modulator mix\n  mode loop\n  stage 1 random 58% 100% for 340ms curve smooth\nend\n",
+            "modulator octaveUp\n  mode loop\n  stage 1 random 0% 76% for 540ms curve smooth\nend\n",
+            "modulator octaveDown\n  mode loop\n  stage 1 random 0% 64% for 680ms curve smooth\nend\n",
             "modulator freeze\n  mode loop\n  stage 1 random 0% 28% for 900ms curve smooth\nend\n",
-            "modulator lowCut\n  mode loop\n  stage 1 random 40% 100% for 1s curve smooth\nend\n",
-            "modulator air\n  mode loop\n  stage 1 random 25% 100% for 900ms curve smooth\nend\n",
+            "modulator lowCut\n  mode loop\n  stage 1 random 45% 100% for 1s curve smooth\nend\n",
+            "modulator air\n  mode loop\n  stage 1 random 25% 100% for 820ms curve smooth\nend\n",
             "", "", "",
-            "modulator spread\n  mode loop\n  stage 1 wander 20% 100% for 280ms curve smooth\nend\n"
+            "modulator spread\n  mode loop\n  stage 1 wander 30% 100% for 240ms curve smooth\nend\n",
+            "modulator matrix\n  mode loop\n  stage 1 wander 35% 100% for 320ms curve smooth\nend\n",
+            "modulator earlyLate\n  mode loop\n  stage 1 random 0% 45% for 420ms curve smooth\nend\n"
         },
-        { true, true, true, true, true, true, true, true, true, true, true, true, false, false, false, true }
+        { true, true, true, true, true, true, true, true, true, true, true, true, false, false, false, true, true, true }
+    },
+    {
+        "Mono To Orbit",
+        { 18.0f, 0.62f, 0.08f, -0.76f, 0.66f, 0.34f, 0.70f, 0.08f, 0.08f, 0.0f, 0.42f, 0.62f, 0.25f, 8.0f, 0.86f, 0.22f, 0.46f, 0.50f },
+        {
+            "modulator paths\n  mode loop\n  stage 1 to 18% for 2s curve smooth\n  stage 2 to 78% for 5s curve smooth\nend\n",
+            "modulator size\n  mode loop\n  stage 1 sine 38% 86% for 8s\nend\n",
+            "modulator coupling\n  mode loop\n  stage 1 to 0% for 2s curve smooth\n  stage 2 to 100% for 5s curve smooth\nend\n",
+            "modulator skew\n  mode loop\n  stage 1 sine 0% 100% for 6s\nend\n",
+            "modulator feedback\n  mode loop\n  stage 1 sine 44% 74% for 9s\nend\n",
+            "", "", "", "", "",
+            "",
+            "modulator air\n  mode loop\n  stage 1 sine 46% 78% for 10s\nend\n",
+            "", "", "",
+            "modulator spread\n  mode loop\n  stage 1 to 0% for 2s curve smooth\n  stage 2 to 58% for 5s curve smooth\nend\n",
+            "modulator matrix\n  mode loop\n  stage 1 to 12% for 2s curve smooth\n  stage 2 to 84% for 5s curve smooth\nend\n",
+            "modulator earlyLate\n  mode loop\n  stage 1 to 20% for 2s curve smooth\n  stage 2 to 88% for 5s curve smooth\nend\n"
+        },
+        { true, true, true, true, true, false, false, false, false, false, false, true, false, false, false, true, true, true }
     },
     {
         "Manual Wide Hall",
-        { 18.0f, 0.70f, 0.72f, 0.00f, 0.62f, 0.32f, 0.58f, 0.00f, 0.00f, 0.0f, 0.34f, 0.66f, 0.0f, 8.0f, 0.92f, 0.24f, 0.36f, 0.62f },
+        { 18.0f, 0.70f, 0.72f, 0.0f, 0.62f, 0.32f, 0.58f, 0.0f, 0.0f, 0.0f, 0.34f, 0.66f, 0.0f, 8.0f, 0.92f, 0.24f, 0.36f, 0.62f },
         {
-            "",
-            "",
-            "modulator coupling\n  mode loop\n  stage 1 sine 35% 92% for 9s\nend\n",
-            "modulator skew\n  mode loop\n  stage 1 sine 35% 65% for 12s\nend\n",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "modulator air\n  mode loop\n  stage 1 sine 50% 80% for 10s\nend\n",
-            "", "", ""
+            "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", ""
         },
-        { false, false, true, true, false, false, false, false, false, false, false, true, false, false, false }
+        { false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false }
     }
 }};
 
